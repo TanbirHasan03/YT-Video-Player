@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Udvash Pro Player - 16:9 Fixed Ratio</title>
+    <title>Udvash Pro Player - Auto Landscape</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -18,7 +18,6 @@
 
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
-        /* Perfect Vertical Centering Logic */
         #yt-player {
             position: absolute; 
             top: 50%;
@@ -30,7 +29,7 @@
             pointer-events: none;
         }
 
-        /* ১. ফুলস্ক্রিন রেশিও ফিক্স - ১৬:৯ নিশ্চিত করতে */
+        /* ফুলস্ক্রিন রেশিও ফিক্স (১৬:৯) */
         :fullscreen .video-ratio, :-webkit-full-screen .video-ratio {
             padding-top: 0 !important;
             height: 100% !important;
@@ -42,9 +41,9 @@
 
         :fullscreen #yt-player, :-webkit-full-screen #yt-player {
             width: 100vw !important;
-            height: 56.25vw !important; /* ১৬:৯ রেশিও (৯/১৬ = ০.৫৬২৫) */
+            height: 56.25vw !important; 
             max-height: 100vh !important;
-            max-width: 177.78vh !important; /* ১৬:৯ রেশিও (১৬/৯ = ১.৭৭৭৮) */
+            max-width: 177.78vh !important; 
             top: 50% !important;
             left: 50% !important;
             transform: translate(-50%, -50%) !important;
@@ -59,7 +58,6 @@
         }
         #custom-thumb i { font-size: 60px; color: white; }
 
-        /* Control Panel */
         .controls {
             position: absolute; bottom: 0; left: 0; width: 100%;
             background: linear-gradient(transparent, rgba(0,0,0,0.95));
@@ -68,7 +66,7 @@
         }
         .controls.active { opacity: 1; }
 
-        /* ফুলস্ক্রিন কন্ট্রোল বার ফিক্স */
+        /* ফুলস্ক্রিনে কন্ট্রোল প্যানেল ফিক্স */
         :fullscreen .controls, :-webkit-full-screen .controls {
             bottom: 10px !important;
             padding: 10px 20px 25px 20px !important;
@@ -78,7 +76,6 @@
         .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 4px; }
         .time-display { color: white; font-size: 12px; font-family: monospace; min-width: 45px; }
 
-        /* Settings Hub */
         .settings-menu {
             position: absolute; bottom: 60px; right: 20px;
             background: var(--panel-bg); border-radius: 8px;
@@ -221,9 +218,8 @@
     function toggleMainMenu(e) {
         e.stopPropagation();
         let m = document.getElementById('mainMenu');
-        let isShow = m.classList.contains('show');
         closeAllMenus();
-        if(!isShow) m.classList.add('show');
+        m.classList.add('show');
     }
 
     function openSub(id) {
@@ -250,17 +246,38 @@
         closeAllMenus();
     }
 
+    // ফুলস্ক্রিন ও অটো ল্যান্ডস্কেপ লজিক
     async function toggleFull() {
         let frame = document.getElementById('main-frame');
         let icon = document.getElementById('f-icon');
 
         if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-            if (frame.requestFullscreen) await frame.requestFullscreen();
-            else if (frame.webkitRequestFullscreen) await frame.webkitRequestFullscreen();
+            if (frame.requestFullscreen) {
+                await frame.requestFullscreen();
+            } else if (frame.webkitRequestFullscreen) {
+                await frame.webkitRequestFullscreen();
+            }
+            
+            // মোবাইল ল্যান্ডস্কেপ লক (Auto Landscape)
+            if (screen.orientation && screen.orientation.lock) {
+                try {
+                    await screen.orientation.lock('landscape');
+                } catch (e) {
+                    console.log("Orientation lock not supported or failed.");
+                }
+            }
             icon.className = "fas fa-compress";
         } else {
-            if (document.exitFullscreen) document.exitFullscreen();
-            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+            
+            // ফুলস্ক্রিন থেকে বের হলে ওরিয়েন্টেশন আনলক করা
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
             icon.className = "fas fa-expand";
         }
     }
