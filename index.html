@@ -3,83 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Video Player</title>
+    <title>Udvash Style Ultra Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #007bff; --bg: #0f1014; }
-        body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
+        :root { --primary: #007bff; --panel-bg: rgba(28, 30, 34, 0.95); }
+        body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-        /* ১. রেসপনসিভ কন্টেইনার */
         .player-wrapper {
-            width: 95%;
-            max-width: 800px;
-            position: relative;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden; /* রিলেটেড ভিডিও হাইড করার মূল চাবিকাঠি */
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            width: 95%; max-width: 850px; position: relative;
+            background: #000; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
-        /* ২. ইউটিউব মাস্কিং (Related Videos হাইড করার জন্য) */
+        /* Related Video ও টাইটেল হাইড করার জন্য মাস্কিং */
         #yt-player {
-            position: absolute;
-            top: -60px; /* টাইটেল উপরে পাঠিয়ে দেওয়া */
-            left: -1%;
-            width: 102%;
-            height: calc(100% + 120px); /* নিচের সাজেশন অংশ ফ্রেমের বাইরে পাঠানো */
-            z-index: 1;
-            pointer-events: none; /* ইউটিউব ইন্টারফেস লক */
+            position: absolute; top: -70px; left: -2%;
+            width: 104%; height: calc(100% + 250px); /* নিচে অনেক জায়গা বাড়িয়ে দেওয়া হয়েছে */
+            z-index: 1; pointer-events: none;
         }
 
-        .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: default; }
+        .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 
-        /* ৩. এক্সটার্নাল থাম্বনেইল */
+        /* External Thumbnail */
         #custom-thumb {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('thumbnail.png') no-repeat center center;
-            background-size: cover;
-            z-index: 20;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('thumbnail.png') no-repeat center center; background-size: cover;
+            z-index: 20; display: flex; justify-content: center; align-items: center; cursor: pointer;
         }
-        #custom-thumb i { font-size: 60px; color: white; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
+        #custom-thumb i { font-size: 70px; color: white; opacity: 0.9; }
 
-        /* ৪. কাস্টম কন্ট্রোল বার */
+        /* Controls */
         .controls {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%;
+            position: absolute; bottom: 0; left: 0; width: 100%;
             background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 25;
-            box-sizing: border-box;
-            transition: opacity 0.3s;
+            padding: 10px 15px; display: flex; align-items: center; gap: 15px;
+            z-index: 30; box-sizing: border-box;
         }
 
-        .btn { background: none; border: none; color: white; cursor: pointer; font-size: 16px; transition: 0.2s; }
-        .btn:hover { color: var(--primary); }
+        .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; position: relative; }
+        .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 5px; }
+        .time-display { color: white; font-size: 13px; font-family: monospace; min-width: 50px; }
 
-        .seek-bar { flex-grow: 1; height: 4px; cursor: pointer; accent-color: var(--primary); }
-
-        /* ৫. ভলিউম স্লাইডার */
-        .volume-box { display: flex; align-items: center; gap: 5px; position: relative; }
-        .volume-slider { width: 0; height: 4px; overflow: hidden; transition: 0.3s; accent-color: var(--primary); }
-        .volume-box:hover .volume-slider { width: 60px; }
-
-        .time-display { color: white; font-size: 12px; font-family: monospace; min-width: 45px; }
+        /* Popup Menus (Speed & Quality) */
+        .menu-popup {
+            position: absolute; bottom: 60px; right: 15px;
+            background: var(--panel-bg); border-radius: 8px;
+            display: none; flex-direction: column; width: 120px;
+            overflow: hidden; border: 1px solid #444; z-index: 40;
+        }
+        .menu-popup button {
+            background: none; border: none; color: white; padding: 10px;
+            text-align: center; cursor: pointer; font-size: 14px;
+        }
+        .menu-popup button:hover { background: var(--primary); }
+        .show { display: flex !important; }
 
         @media (max-width: 480px) {
-            .controls { padding: 10px; gap: 8px; }
-            #custom-thumb i { font-size: 45px; }
-            .volume-box:hover .volume-slider { width: 40px; }
+            .btn { font-size: 16px; }
+            .controls { gap: 10px; padding: 10px; }
         }
 
         .hidden { display: none !important; }
@@ -90,52 +74,56 @@
 <div class="player-wrapper" id="main-frame">
     <div class="video-ratio">
         <div id="custom-thumb" onclick="startVideo()">
-            <i class="fas fa-play"></i>
+            <i class="fas fa-play-circle"></i>
         </div>
 
         <div id="yt-player"></div>
-
         <div class="shield"></div>
+
+        <div class="menu-popup" id="speedMenu">
+            <button onclick="setSpeed(0.5)">0.5x</button>
+            <button onclick="setSpeed(1)">1x (Normal)</button>
+            <button onclick="setSpeed(1.5)">1.5x</button>
+            <button onclick="setSpeed(2)">2x</button>
+        </div>
+
+        <div class="menu-popup" id="qualityMenu" style="right: 55px;">
+            <button onclick="setQuality('hd1080')">1080p</button>
+            <button onclick="setQuality('hd720')">720p</button>
+            <button onclick="setQuality('large')">480p</button>
+            <button onclick="setQuality('auto')">Auto</button>
+        </div>
 
         <div class="controls" id="ui">
             <button class="btn" onclick="playPause()"><i id="p-icon" class="fas fa-play"></i></button>
             <button class="btn" onclick="rewind()"><i class="fas fa-undo"></i></button>
             <button class="btn" onclick="forward()"><i class="fas fa-redo"></i></button>
 
-            <div class="volume-box">
-                <button class="btn" onclick="muteUnmute()"><i id="v-icon" class="fas fa-volume-up"></i></button>
-                <input type="range" class="volume-slider" id="v-range" min="0" max="100" value="100" oninput="setVol(this.value)">
-            </div>
-
             <input type="range" class="seek-bar" id="seek" value="0" step="0.1" oninput="doSeek(this.value)">
 
             <div class="time-display" id="timer">-00:00</div>
-            <button class="btn" onclick="toggleSpeed()" id="speedBtn">1x</button>
-            <button class="btn" onclick="fullScr()"><i class="fas fa-expand"></i></button>
+
+            <button class="btn" onclick="toggleMenu('speedMenu')"><span id="speedTxt">1x</span></button>
+
+            <button class="btn" onclick="toggleMenu('qualityMenu')"><i class="fas fa-cog"></i></button>
+
+            <button class="btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
         </div>
     </div>
 </div>
 
 <script>
     var player;
-    var vidId = 'lBvbNxiVmZA'; // আপনার ভিডিও আইডি এখানে দিন
+    var vidId = 'lBvbNxiVmZA'; 
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('yt-player', {
             videoId: vidId,
-            playerVars: {
-                'controls': 0,
-                'modestbranding': 1,
-                'rel': 0,
-                'iv_load_policy': 3,
-                'showinfo': 0,
-                'disablekb': 1
-            },
+            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1 },
             events: { 'onStateChange': onStateChange }
         });
     }
 
-    // থাম্বনেইলে চাপ দিলে ভিডিও শুরু হবে
     function startVideo() {
         document.getElementById('custom-thumb').classList.add('hidden');
         player.playVideo();
@@ -158,26 +146,6 @@
     function rewind() { player.seekTo(player.getCurrentTime() - 10); }
     function forward() { player.seekTo(player.getCurrentTime() + 10); }
 
-    // ভলিউম ফাংশন
-    function setVol(v) {
-        player.setVolume(v);
-        let icon = document.getElementById('v-icon');
-        if(v == 0) icon.className = "fas fa-volume-mute";
-        else icon.className = "fas fa-volume-up";
-    }
-
-    function muteUnmute() {
-        if(player.isMuted()) {
-            player.unMute();
-            document.getElementById('v-range').value = 100;
-            document.getElementById('v-icon').className = "fas fa-volume-up";
-        } else {
-            player.mute();
-            document.getElementById('v-range').value = 0;
-            document.getElementById('v-icon').className = "fas fa-volume-mute";
-        }
-    }
-
     function doSeek(v) { player.seekTo(player.getDuration() * (v / 100)); }
 
     function updateUI() {
@@ -186,7 +154,6 @@
                 let curr = player.getCurrentTime();
                 let total = player.getDuration();
                 document.getElementById('seek').value = (curr / total) * 100;
-                
                 let rem = total - curr;
                 let m = Math.floor(rem / 60);
                 let s = Math.floor(rem % 60);
@@ -195,24 +162,51 @@
         }, 1000);
     }
 
-    function toggleSpeed() {
-        let rates = [1, 1.5, 2, 0.5];
-        let curr = player.getPlaybackRate();
-        let next = rates[(rates.indexOf(curr) + 1) % rates.length];
-        player.setPlaybackRate(next);
-        document.getElementById('speedBtn').innerText = next + 'x';
+    // Menu Toggle
+    function toggleMenu(id) {
+        let m = document.getElementById(id);
+        let isShow = m.classList.contains('show');
+        document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
+        if(!isShow) m.classList.add('show');
     }
 
-    function fullScr() {
-        let el = document.getElementById('main-frame');
-        if (el.requestFullscreen) el.requestFullscreen();
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    function setSpeed(s) {
+        player.setPlaybackRate(s);
+        document.getElementById('speedTxt').innerText = s + 'x';
+        document.getElementById('speedMenu').classList.remove('show');
+    }
+
+    function setQuality(q) {
+        if(player.setPlaybackQuality) player.setPlaybackQuality(q);
+        document.getElementById('qualityMenu').classList.remove('show');
+    }
+
+    // Fullscreen Fix (Toggle)
+    function toggleFull() {
+        let frame = document.getElementById('main-frame');
+        let icon = document.getElementById('f-icon');
+
+        if (!document.fullscreenElement) {
+            if (frame.requestFullscreen) frame.requestFullscreen();
+            else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+            icon.className = "fas fa-compress";
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            icon.className = "fas fa-expand";
+        }
     }
 
     // API Load
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
+
+    // বাইরের কোথাও ক্লিক করলে মেনু বন্ধ হবে
+    window.onclick = function(event) {
+        if (!event.target.closest('.btn')) {
+            document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
+        }
+    }
 </script>
 
 </body>
