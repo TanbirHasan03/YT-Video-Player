@@ -22,38 +22,39 @@
 
     .container { width: 95%; max-width: 1200px; margin: 0 auto; padding: 10px; }
 
+    /* Original Navbar with Mobile Icon Fix */
     .navbar { 
       background-color: rgba(255, 255, 255, 0.8); 
       backdrop-filter: blur(8px); 
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-      padding: 10px 0;
+      padding: 10px 15px;
     }
-    .navbar-brand img { height: 50px; }
-    .navbar-nav .nav-link { color: #333 !important; font-weight: 600; }
+    .navbar-brand img { height: 45px; }
+    .navbar-nav .nav-link { color: #333 !important; font-weight: 600; padding: 10px 15px; }
 
-    /* Responsive Title (1 line fix) */
+    /* Responsive Title */
     .header-title { 
       text-align: center; 
       color: black; 
       margin: 20px 0; 
       font-weight: 700; 
       font-size: 1.8rem; 
-      white-space: nowrap; 
-      overflow: hidden; 
-      text-overflow: ellipsis; 
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    @media (max-width: 576px) { .header-title { font-size: 1.2rem; } }
+    @media (max-width: 576px) { .header-title { font-size: 1.3rem; white-space: normal; } }
 
-    /* Context & Topic Name Animation */
+    /* Context & Topic Name Animation (80% Underline) */
     .animated-heading { 
       color: #007bff; 
-      margin: 25px 0; 
+      margin: 15px 0; 
       font-size: 1.5rem; 
       font-weight: 700; 
       position: relative; 
       padding-bottom: 10px; 
       cursor: pointer;
-      display: inline-block;
+      display: block;
+      width: fit-content;
     }
     .animated-heading::after { 
       content: ''; 
@@ -64,17 +65,22 @@
       width: 50px; 
       background-color: #007bff; 
       border-radius: 2px; 
-      transition: width 0.4s ease;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .animated-heading:active::after { width: 100%; }
+    /* Mobile-e active ba click korle 80% screen width jabe */
+    .animated-heading:active::after, .animated-heading:hover::after { 
+      width: 80vw; 
+      max-width: 80%;
+    }
 
-    /* --- Video Player (Isolated) --- */
+    .topic-name { font-size: 1.2rem; color: #555; margin-top: -10px; margin-bottom: 25px; }
+
+    /* --- Video Player Section --- */
     .v-player-wrapper {
         width: 100%; max-width: 900px; position: relative;
         background: #000; border-radius: 8px; overflow: hidden;
         margin: 0 auto 30px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
-
     .v-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
     #yt-player {
@@ -83,16 +89,9 @@
         z-index: 1; pointer-events: none;
     }
 
-    /* Fullscreen 16:9 Fixed Ratio & Landscape */
-    :fullscreen .v-ratio, :-webkit-full-screen .v-ratio { 
-        padding-top: 0 !important; height: 100vh !important; width: 100vw !important; 
-        display: flex !important; align-items: center !important; justify-content: center !important; 
-    }
-    :fullscreen #yt-player, :-webkit-full-screen #yt-player { 
-        width: 177.78vh !important; height: calc(100vh + 400px) !important; 
-        max-width: 102vw !important; top: 50% !important; left: 50% !important; 
-        transform: translate(-50%, -50%) !important; 
-    }
+    /* Fullscreen logic */
+    :fullscreen .v-ratio, :-webkit-full-screen .v-ratio { padding-top: 0 !important; height: 100vh !important; width: 100vw !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+    :fullscreen #yt-player, :-webkit-full-screen #yt-player { width: 177.78vh !important; height: calc(100vh + 400px) !important; max-width: 102vw !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; }
 
     .v-shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer; }
 
@@ -103,7 +102,6 @@
     }
     #v-custom-thumb i { font-size: 60px; color: white; opacity: 0.9; }
 
-    /* Controls UI Fix */
     .v-controls {
         position: absolute; bottom: 0; left: 0; width: 100%;
         background: linear-gradient(transparent, rgba(0,0,0,0.9));
@@ -119,20 +117,13 @@
     .v-settings-menu {
         position: absolute; bottom: 55px; right: 15px;
         background: rgba(15, 15, 15, 0.98); border-radius: 8px;
-        display: none; flex-direction: column; width: 140px;
-        border: 1px solid #444; z-index: 110; overflow: hidden;
+        display: none; flex-direction: column; width: 140px; border: 1px solid #444; z-index: 110; overflow: hidden;
     }
     .v-menu-item { padding: 10px; color: white; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; border-bottom: 1px solid #333; }
-    .v-menu-item:hover { background: #333; }
     .v-show { display: flex !important; }
 
-    /* --- FOOTER (Exact Match) --- */
-    .footer-section {
-        margin-top: 60px;
-        background: linear-gradient(135deg, #0a3d62, #1e90ff);
-        color: #fff;
-        padding: 50px 0 15px 0;
-    }
+    /* --- FOOTER --- */
+    .footer-section { margin-top: 60px; background: linear-gradient(135deg, #0a3d62, #1e90ff); color: #fff; padding: 50px 0 15px 0; }
     .footer-title { font-weight: 700; font-size: 1.5rem; margin-bottom: 15px; }
     .footer-links { list-style: none; padding: 0; }
     .footer-links a { color: #fff; text-decoration: none; }
@@ -142,15 +133,18 @@
 <body onclick="manageControls()">
 
   <nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container d-flex justify-content-between align-items-center">
+    <div class="container">
       <a class="navbar-brand" href="index.html">
         <img src="img/logo1.png" alt="Logo">
       </a>
-      <div class="d-none d-lg-block">
-        <ul class="navbar-nav flex-row">
-          <li class="nav-item px-2"><a class="nav-link" href="index.html">হোম</a></li>
-          <li class="nav-item px-2"><a class="nav-link" href="index.html">কোর্স</a></li>
-          <li class="nav-item px-2"><a class="nav-link" href="about.html">আমাদের সম্পর্কে</a></li>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">হোম</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html">কোর্স</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">আমাদের সম্পর্কে</a></li>
         </ul>
       </div>
     </div>
@@ -160,6 +154,7 @@
     <h1 class="header-title">Civil Department | Demo Class</h1>
 
     <h2 class="animated-heading">Context Name</h2>
+    <h2 class="animated-heading topic-name">Topic Name</h2>
 
     <div class="v-player-wrapper" id="main-frame">
         <div class="v-ratio">
@@ -198,8 +193,6 @@
             </div>
         </div>
     </div>
-
-    <h2 class="animated-heading">Topic Name</h2>
   </div>
 
   <footer class="footer-section">
@@ -313,7 +306,6 @@
             if (frame.requestFullscreen) await frame.requestFullscreen();
             else if (frame.webkitRequestFullscreen) await frame.webkitRequestFullscreen();
             
-            // Force Landscape on Mobile
             if (screen.orientation && screen.orientation.lock) {
                 try { await screen.orientation.lock('landscape'); } catch (e) {}
             }
