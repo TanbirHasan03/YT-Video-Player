@@ -2,90 +2,99 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Udvash Style Final Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Udvash Style Ultra Player Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #007bff; --panel-bg: rgba(28, 30, 34, 0.98); }
-        body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
+        :root { --primary: #007bff; --panel-bg: rgba(0, 0, 0, 0.85); }
+        body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; overflow-x: hidden; }
 
+        /* ১. মেইন হোল্ডার - সাইড মার্জিন ঠিক করা হয়েছে */
         .player-wrapper {
-            width: 98%; max-width: 850px; position: relative;
+            width: 92%; /* দুই পাশে গ্যাপ রাখার জন্য কমানো হয়েছে */
+            max-width: 850px; 
+            position: relative;
             background: #000; border-radius: 12px; overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
-        /* মাস্কিং আপডেট: দুই পাশ ঠিক রাখা হয়েছে এবং উপরে-নিচে আরও বাড়ানো হয়েছে */
+        /* ২. মাস্কিং আরও বাড়ানো হয়েছে (Related Video বন্ধ করতে) */
         #yt-player {
             position: absolute; 
-            top: -130px; /* আরও ১০ পিক্সেল উপরে তোলা হয়েছে */
-            left: 0;
-            width: 100%; /* ৫ পিক্সেল কাটা বন্ধ করতে ১০০% রাখা হয়েছে */
-            height: calc(100% + 260px); /* মোট ২৬০ পিক্সেল বাড়তি মাস্কিং */
+            top: -150px; /* আরও ২০ পিক্সেল বাড়ানো হয়েছে */
+            left: -2px;
+            width: calc(100% + 4px); /* সাইড গ্যাপ ফিক্স */
+            height: calc(100% + 300px); 
             z-index: 1; 
             pointer-events: none;
         }
 
+        /* ৩. ইন্টারঅ্যাকশন লেয়ার */
         .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 
-        /* থাম্বনেইল */
+        /* ৪. থাম্বনেইল */
         #custom-thumb {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: url('thumbnail.png') no-repeat center center; background-size: cover;
             z-index: 20; display: flex; justify-content: center; align-items: center; cursor: pointer;
         }
-        #custom-thumb i { font-size: 65px; color: white; opacity: 0.9; }
+        #custom-thumb i { font-size: 60px; color: white; }
 
-        /* কন্ট্রোল বার */
+        /* ৫. অটো-হাইড কন্ট্রোল বার */
         .controls {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.98));
-            padding: 12px; display: flex; align-items: center; gap: 12px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 15px; display: flex; align-items: center; gap: 12px;
             z-index: 30; box-sizing: border-box;
+            transition: opacity 0.5s ease;
+            opacity: 0; /* শুরুতে হাইড থাকবে */
         }
+        .controls.active { opacity: 1; }
 
         .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; display: flex; align-items: center; }
         .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 5px; }
         .time-display { color: white; font-size: 13px; font-family: monospace; min-width: 50px; }
 
-        /* মেনু পপআপ */
         .menu-popup {
-            position: absolute; bottom: 60px; right: 10px;
+            position: absolute; bottom: 65px; right: 10px;
             background: var(--panel-bg); border-radius: 8px;
             display: none; flex-direction: column; width: 110px;
-            overflow: hidden; border: 1px solid #444; z-index: 40;
+            border: 1px solid #444; z-index: 40;
         }
         .menu-popup button {
             background: none; border: none; color: white; padding: 12px;
             text-align: center; cursor: pointer; font-size: 14px; border-bottom: 1px solid #333;
         }
-        .menu-popup button:hover { background: var(--primary); }
         .show { display: flex !important; }
 
-        /* মোবাইল অপ্টিমাইজেশন */
+        /* মোবাইল ফুলস্ক্রিন ও সাইড ফিক্স */
         @media (max-width: 600px) {
-            .controls { gap: 8px; padding: 8px; }
-            .btn { font-size: 15px; }
-            .time-display { font-size: 11px; min-width: 40px; }
-            #yt-player { top: -90px; height: calc(100% + 180px); }
+            .player-wrapper { width: 95%; }
+            #yt-player { top: -100px; height: calc(100% + 200px); }
+            .controls { padding: 10px; padding-bottom: 15px; } /* মোবাইলে একটু উপরে রাখা */
+            .btn { font-size: 16px; }
         }
+
+        /* ফুলস্ক্রিন অবস্থায় কন্ট্রোল ঠিক রাখার জন্য */
+        :fullscreen .controls { bottom: 20px; }
+        :-webkit-full-screen .controls { bottom: 20px; }
 
         .hidden { display: none !important; }
     </style>
 </head>
-<body>
+<body onclick="showControls()">
 
 <div class="player-wrapper" id="main-frame">
-    <div class="video-ratio">
+    <div class="video-ratio" id="v-area">
         <div id="custom-thumb" onclick="startVideo()">
             <i class="fas fa-play-circle"></i>
         </div>
 
         <div id="yt-player"></div>
-        <div class="shield"></div>
+        <div class="shield" onclick="showControls()"></div>
 
         <div class="menu-popup" id="speedMenu">
             <button onclick="setSpeed(0.5)">0.5x</button>
@@ -98,10 +107,9 @@
             <button onclick="setQuality('hd1080')">1080p</button>
             <button onclick="setQuality('hd720')">720p</button>
             <button onclick="setQuality('large')">480p</button>
-            <button onclick="setQuality('auto')">Auto</button>
         </div>
 
-        <div class="controls">
+        <div class="controls" id="ui-bar">
             <button class="btn" onclick="playPause()"><i id="p-icon" class="fas fa-play"></i></button>
             <button class="btn" onclick="rewind()"><i class="fas fa-undo"></i></button>
             <button class="btn" onclick="forward()"><i class="fas fa-redo"></i></button>
@@ -110,8 +118,8 @@
 
             <div class="time-display" id="timer">-00:00</div>
 
-            <button class="btn" onclick="toggleMenu('speedMenu')"><span id="speedTxt" style="font-size: 13px; font-weight: bold;">1x</span></button>
-            <button class="btn" onclick="toggleMenu('qualityMenu')"><i class="fas fa-cog"></i></button>
+            <button class="btn" onclick="toggleMenu('speedMenu', event)"><span id="speedTxt" style="font-size: 13px;">1x</span></button>
+            <button class="btn" onclick="toggleMenu('qualityMenu', event)"><i class="fas fa-cog"></i></button>
             <button class="btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
         </div>
     </div>
@@ -120,11 +128,12 @@
 <script>
     var player;
     var vidId = 'lBvbNxiVmZA'; 
+    var hideTimeout;
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('yt-player', {
             videoId: vidId,
-            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1 },
+            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1, 'fs': 0 },
             events: { 'onStateChange': onStateChange }
         });
     }
@@ -132,14 +141,29 @@
     function startVideo() {
         document.getElementById('custom-thumb').classList.add('hidden');
         player.playVideo();
+        showControls();
+    }
+
+    function showControls() {
+        let bar = document.getElementById('ui-bar');
+        bar.classList.add('active');
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+            if (player.getPlayerState() == 1) { // ভিডিও চললে হাইড হবে
+                bar.classList.remove('active');
+                document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
+            }
+        }, 3000);
     }
 
     function onStateChange(e) {
         if (e.data == 1) {
             document.getElementById('p-icon').className = "fas fa-pause";
             updateUI();
+            showControls();
         } else {
             document.getElementById('p-icon').className = "fas fa-play";
+            document.getElementById('ui-bar').classList.add('active');
         }
     }
 
@@ -148,9 +172,9 @@
         else player.playVideo();
     }
 
-    function rewind() { player.seekTo(player.getCurrentTime() - 10); }
-    function forward() { player.seekTo(player.getCurrentTime() + 10); }
-    function doSeek(v) { player.seekTo(player.getDuration() * (v / 100)); }
+    function rewind() { player.seekTo(player.getCurrentTime() - 10); showControls(); }
+    function forward() { player.seekTo(player.getCurrentTime() + 10); showControls(); }
+    function doSeek(v) { player.seekTo(player.getDuration() * (v / 100)); showControls(); }
 
     function updateUI() {
         setInterval(() => {
@@ -166,7 +190,8 @@
         }, 1000);
     }
 
-    function toggleMenu(id) {
+    function toggleMenu(id, event) {
+        event.stopPropagation();
         let m = document.getElementById(id);
         let isShow = m.classList.contains('show');
         document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
@@ -184,7 +209,6 @@
         document.getElementById('qualityMenu').classList.remove('show');
     }
 
-    // Fullscreen with Auto-Landscape Fix
     async function toggleFull() {
         let frame = document.getElementById('main-frame');
         let icon = document.getElementById('f-icon');
@@ -192,19 +216,13 @@
         if (!document.fullscreenElement && !document.webkitFullscreenElement) {
             if (frame.requestFullscreen) await frame.requestFullscreen();
             else if (frame.webkitRequestFullscreen) await frame.webkitRequestFullscreen();
-            
-            // Landscape Mode Trigger
             if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock("landscape").catch(e => console.log("Orientation lock not supported"));
+                screen.orientation.lock("landscape").catch(e => {});
             }
             icon.className = "fas fa-compress";
         } else {
             if (document.exitFullscreen) document.exitFullscreen();
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-            
-            if (screen.orientation && screen.orientation.unlock) {
-                screen.orientation.unlock();
-            }
             icon.className = "fas fa-expand";
         }
     }
@@ -212,12 +230,6 @@
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
-
-    window.onclick = function(event) {
-        if (!event.target.closest('.btn')) {
-            document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
-        }
-    }
 </script>
 
 </body>
