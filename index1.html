@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* --- Main Webpage Original Design Persistence --- */
+    /* --- Main Webpage Original Design --- */
     body {
       font-family: 'Anek Bangla', 'Roboto', sans-serif;
       background-color: #eef2f5;
@@ -22,17 +22,15 @@
 
     .container { width: 90%; max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-    /* Navbar Styles (Original) */
     .navbar { background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 0.5rem 1rem; }
     .navbar-brand img { height: 50px; }
     .navbar-nav .nav-link { color: #333; font-weight: 600; }
 
-    /* Header Styles (Original) */
     h1 { text-align: center; color: black; margin-bottom: 30px; font-size: 2.5rem; font-weight: 700; }
     h2 { color: #007bff; margin: 20px 0; font-size: 1.75rem; font-weight: 700; position: relative; padding-bottom: 10px; }
     h2::after { content: ''; position: absolute; left: 0; bottom: 0; height: 4px; width: 50px; background-color: #007bff; border-radius: 2px; }
 
-    /* --- Video Player Section (Isolated for Video.html functionality) --- */
+    /* --- Video Player Section (Isolated) --- */
     .v-player-wrapper {
         width: 100%; max-width: 850px; position: relative;
         background: #000; border-radius: 12px; overflow: hidden;
@@ -41,16 +39,15 @@
 
     .v-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
-    /* Masking for Pro Player Look */
     #yt-player {
         position: absolute; top: 50%; left: -1%; width: 102%; 
         height: calc(100% + 500px); transform: translateY(-50%); 
         z-index: 1; pointer-events: none;
     }
 
-    /* Fullscreen Masking Fix */
-    :fullscreen .v-ratio { padding-top: 0 !important; height: 100vh !important; width: 100vw !important; display: flex !important; align-items: center !important; justify-content: center !important; }
-    :fullscreen #yt-player { width: 100vw !important; height: calc(56.25vw + 400px) !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; }
+    /* Fullscreen Masking */
+    :fullscreen .v-ratio, :-webkit-full-screen .v-ratio { padding-top: 0 !important; height: 100vh !important; width: 100vw !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #000 !important; }
+    :fullscreen #yt-player, :-webkit-full-screen #yt-player { width: 100vw !important; height: calc(56.25vw + 400px) !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; }
 
     .v-shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer; }
 
@@ -61,7 +58,7 @@
     }
     #v-custom-thumb i { font-size: 60px; color: white; }
 
-    /* Controls (Video.html style) */
+    /* Mobile Fix for Controls */
     .v-controls {
         position: absolute; bottom: 0; left: 0; width: 100%;
         background: linear-gradient(transparent, rgba(0,0,0,0.95));
@@ -70,42 +67,66 @@
     }
     .v-controls.active { opacity: 1; }
 
-    .v-btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 5px; display: flex; align-items: center; }
+    /* Mobile Setting Icon & UI Fix */
+    @media (max-width: 600px) {
+        #yt-player { height: calc(100% + 140px); }
+        .v-controls { padding: 5px 10px 15px 10px; gap: 5px; }
+        .v-btn { font-size: 16px; padding: 8px; }
+        .v-settings-menu { width: 130px; bottom: 55px; right: 10px; }
+    }
+
+    .v-btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 5px; display: flex; align-items: center; outline: none !important; }
     .v-seek-bar { flex-grow: 1; cursor: pointer; accent-color: #007bff; height: 4px; }
     .v-time-display { color: white; font-size: 12px; font-family: monospace; min-width: 45px; }
 
-    /* Settings Menu Style */
     .v-settings-menu {
-        position: absolute; bottom: 60px; right: 20px;
+        position: absolute; bottom: 65px; right: 20px;
         background: rgba(15, 15, 15, 0.98); border-radius: 8px;
         display: none; flex-direction: column; width: 150px;
         border: 1px solid #444; z-index: 110; overflow: hidden;
     }
-    .v-menu-item { padding: 12px; color: white; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
-    .v-menu-item:hover { background: #333; }
+    .v-menu-item { padding: 12px; color: white; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; text-decoration: none !important; }
+    .v-menu-item:hover { background: #333; color: white; }
     .v-show { display: flex !important; }
     .v-hidden { display: none !important; }
 
-    /* Footer Styles (Original) */
-    .footer-section { margin-top: 60px; background: linear-gradient(135deg, #0a3d62, #1e90ff); color: #fff; padding: 50px 0 15px 0; }
-    .footer-links a { color: #fff; text-decoration: none; }
+    /* --- FOOTER SECTION (Same to Same as Main Website) --- */
+    .footer-section {
+        margin-top: 60px;
+        background: linear-gradient(135deg, #0a3d62, #1e90ff);
+        color: #fff;
+        padding: 50px 0 15px 0;
+        border-top: 3px solid rgba(255,255,255,0.2);
+        box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+    }
+    .footer-title { font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-bottom: 15px; letter-spacing: 1px; }
+    .footer-text { color: #f0f0f0; font-size: 1rem; line-height: 1.6; }
+    .footer-links li { margin-bottom: 8px; font-size: 1rem; color: #fff; list-style: none; }
+    .footer-links a { color: #fff; text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
+    .footer-links a:hover { color: #ffd700; text-decoration: underline; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); margin-top: 25px; padding-top: 10px; text-align: center; }
+    .footer-bottom p { margin: 5px 0; font-size: 0.95rem; color: #e8e8e8; }
+    .credit a { color: #ffd700; text-decoration: none; }
+    @media (max-width:768px) { .footer-section { text-align: center; } .footer-links { padding: 0; } }
   </style>
 </head>
 <body onclick="manageControls()">
 
   <nav class="navbar navbar-expand-lg navbar-light">
-    <a class="navbar-brand" href="index.html">
-      <img src="img/logo1.png" alt="Logo" id="navbar-logo">
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item"><a class="nav-link" href="index.html">হোম</a></li>
-        <li class="nav-item"><a class="nav-link" href="index.html">কোর্স</a></li>
-        <li class="nav-item"><a class="nav-link" href="about.html">আমাদের সম্পর্কে</a></li>
-      </ul>
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img src="img/logo1.png" alt="Logo" id="navbar-logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="index.html">হোম</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html">কোর্স</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">আমাদের সম্পর্কে</a></li>
+        </ul>
+      </div>
     </div>
   </nav>
 
@@ -129,7 +150,6 @@
                 <div class="v-menu-item" onclick="openSub('speedSub')">Speed <i class="fas fa-chevron-right"></i></div>
                 <div class="v-menu-item" onclick="openSub('qualitySub')">Quality <i class="fas fa-chevron-right"></i></div>
             </div>
-
             <div class="v-settings-menu" id="speedSub">
                 <div class="v-menu-item" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Back</div>
                 <div class="v-menu-item" onclick="setSpeed(0.5)">0.5x</div>
@@ -137,7 +157,6 @@
                 <div class="v-menu-item" onclick="setSpeed(1.5)">1.5x</div>
                 <div class="v-menu-item" onclick="setSpeed(2)">2x</div>
             </div>
-
             <div class="v-settings-menu" id="qualitySub">
                 <div class="v-menu-item" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Back</div>
                 <div class="v-menu-item" onclick="setQuality('hd1080')">1080p</div>
@@ -149,38 +168,45 @@
                 <button class="v-btn" onclick="playPause()"><i id="p-icon" class="fas fa-play"></i></button>
                 <button class="v-btn" onclick="rewind()"><i class="fas fa-undo"></i></button>
                 <button class="v-btn" onclick="forward()"><i class="fas fa-redo"></i></button>
-
                 <input type="range" class="v-seek-bar" id="seek" value="0" step="0.1" oninput="doSeek(this.value)">
-
                 <div class="v-time-display" id="timer">-00:00</div>
-
                 <button class="v-btn" onclick="toggleMainMenu(event)"><i class="fas fa-cog"></i></button>
-                <button class="v-btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
+                <button class="v-btn" id="f-btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
             </div>
         </div>
     </div>
   </div>
 
   <footer class="footer-section">
-    <div class="container text-center">
-      <h5>Diploma Tutor</h5>
-      <p>শিক্ষার্থীদের একাডেমিক প্রস্তুতির জন্য নির্ভরযোগ্য প্ল্যাটফর্ম।</p>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-5 mb-4 text-center">
+          <h5 class="footer-title">Diploma Tutor</h5>
+          <p class="footer-text">শিক্ষার্থীদের একাডেমিক প্রস্তুতির জন্য নির্ভরযোগ্য ও দক্ষ গাইডলাইন প্ল্যাটফর্ম।</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <h5 class="footer-title">Quick Links</h5>
+          <ul class="footer-links">
+            <li>• <a href="index.html">হোম</a></li>
+            <li>• <a href="index.html">কোর্স</a></li>
+            <li>• <a href="about.html">আমাদের সম্পর্কে</a></li>
+          </ul>
+        </div>
+      </div>
       <div class="footer-bottom">
         <p>© 2025 <strong>Diploma Tutor</strong> | All Rights Reserved</p>
-        <p>Website by: <a href="https://facebook.com/TanbirHasan30" target="_blank"><strong>Tanbir Hasan</strong></a></p>
+        <p class="credit">Website create by: <a href="https://facebook.com/TanbirHasan30" target="_blank"><strong>Tanbir Hasan</strong></a></p>
       </div>
     </div>
   </footer>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
-
   <script>
     var player;
     var vidId = 'Wa92K2fUSjs'; 
     var hideTimeout;
 
-    // Load YouTube API
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
@@ -188,10 +214,7 @@
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('yt-player', {
             videoId: vidId,
-            playerVars: { 
-                'controls': 0, 'modestbranding': 1, 'rel': 0, 
-                'iv_load_policy': 3, 'disablekb': 1, 'fs': 0, 'showinfo': 0 
-            },
+            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1, 'fs': 0, 'showinfo': 0 },
             events: { 'onStateChange': onStateChange }
         });
     }
@@ -249,33 +272,15 @@
         }, 1000);
     }
 
-    function toggleMainMenu(e) {
-        e.stopPropagation();
-        closeAllMenus();
-        document.getElementById('mainMenu').classList.add('v-show');
-    }
-
-    function openSub(id) {
-        closeAllMenus();
-        document.getElementById(id).classList.add('v-show');
-    }
-
-    function backToMain() {
-        closeAllMenus();
-        document.getElementById('mainMenu').classList.add('v-show');
-    }
-
-    function closeAllMenus() {
-        document.querySelectorAll('.v-settings-menu').forEach(el => el.classList.remove('v-show'));
-    }
-
+    function toggleMainMenu(e) { e.stopPropagation(); closeAllMenus(); document.getElementById('mainMenu').classList.add('v-show'); }
+    function openSub(id) { closeAllMenus(); document.getElementById(id).classList.add('v-show'); }
+    function backToMain() { closeAllMenus(); document.getElementById('mainMenu').classList.add('v-show'); }
+    function closeAllMenus() { document.querySelectorAll('.v-settings-menu').forEach(el => el.classList.remove('v-show')); }
     function setSpeed(s) { player.setPlaybackRate(s); closeAllMenus(); }
     function setQuality(q) { if(player.setPlaybackQuality) player.setPlaybackQuality(q); closeAllMenus(); }
 
     async function toggleFull() {
         let frame = document.getElementById('main-frame');
-        let icon = document.querySelector('.v-btn .fa-expand, .v-btn .fa-compress');
-
         if (!document.fullscreenElement) {
             if (frame.requestFullscreen) await frame.requestFullscreen();
             document.getElementById('f-icon').className = "fas fa-compress";
