@@ -3,84 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Professional Video Player - Udvash Style</title>
+    <title>Pro Player - Professional Fix</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #007bff; --panel-bg: rgba(0, 0, 0, 0.9); }
-        body { background: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
+        :root { 
+            --primary: #007bff; 
+            --panel-bg: rgba(0, 0, 0, 0.95);
+            /* ডেক্সটপ মাস্কিং ভ্যালু */
+            --mask-top: -180px;
+            --mask-height: 360px;
+        }
+
+        body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; overflow: hidden; }
 
         .player-wrapper {
             width: 92%; max-width: 850px; position: relative;
-            background: #000; border-radius: 10px; overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            background: #000; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        /* ১. ভিডিও এরিয়া - এখানে আমরা ওরিজিনাল অ্যাসপেক্ট রেশিও রাখছি */
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
-        /* ২. আইফ্রেম ফিক্স - রিলেটেড ভিডিও লুকাতে বড় স্কেল এবং ট্রান্সফর্ম ব্যবহার */
+        /* ইউটিউব প্লেয়ার পজিশনিং */
         #yt-player {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 100%; height: 100%;
-            transform: translate(-50%, -50%) scale(1.6); /* ভিডিও জুম করা হয়েছে যাতে রিলেটেড ভিডিও অনেক দূরে থাকে */
-            z-index: 1; pointer-events: none;
+            position: absolute; 
+            top: var(--mask-top); 
+            left: 0;
+            width: 100%; 
+            height: calc(100% + var(--mask-height)); 
+            z-index: 1; 
+            pointer-events: none;
+            transition: all 0.3s ease;
         }
 
         .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 
-        /* ৩. প্রফেশনাল কন্ট্রোল প্যানেল */
+        /* কন্ট্রোল বার */
         .controls {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.95));
+            background: linear-gradient(transparent, rgba(0,0,0,0.98));
             padding: 15px 20px; display: flex; align-items: center; 
-            z-index: 30; box-sizing: border-box; gap: 12px;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            opacity: 0; transform: translateY(10px);
+            justify-content: space-between;
+            z-index: 30; box-sizing: border-box;
+            transition: opacity 0.4s ease; opacity: 0;
         }
-        .controls.active { opacity: 1; transform: translateY(0); }
+        .controls.active { opacity: 1; }
 
-        /* মোবাইল ও ফুলস্ক্রিনে কন্ট্রোল বার পজিশন ফিক্স */
-        :fullscreen .controls, :-webkit-full-screen .controls {
-            padding-bottom: 35px !important; /* মোবাইলে রাউন্ডেড ডিসপ্লের জন্য সেফ জোন */
-        }
+        .control-group { display: flex; align-items: center; gap: 15px; }
+        .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 5px; }
+        .seek-bar { flex-grow: 1; margin: 0 10px; cursor: pointer; accent-color: var(--primary); height: 5px; }
+        .time-display { color: white; font-size: 13px; font-family: monospace; min-width: 50px; }
 
-        .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; display: flex; align-items: center; transition: 0.2s; }
-        .btn:hover { color: var(--primary); }
-        
-        .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 5px; }
-        .time-display { color: white; font-size: 12px; font-family: monospace; min-width: 50px; text-align: right; }
-
+        /* পপআপ মেনু */
         .menu-popup {
-            position: absolute; bottom: 65px; right: 20px;
+            position: absolute; bottom: 70px; right: 20px;
             background: var(--panel-bg); border-radius: 8px;
-            display: none; flex-direction: column; width: 110px;
-            border: 1px solid #444; z-index: 40; overflow: hidden;
+            display: none; flex-direction: column; width: 115px;
+            border: 1px solid #444; z-index: 40;
         }
         .menu-popup button {
             background: none; border: none; color: white; padding: 12px;
-            text-align: center; cursor: pointer; font-size: 13px; border-bottom: 1px solid #333;
+            text-align: center; cursor: pointer; font-size: 14px; border-bottom: 1px solid #333;
         }
-        .menu-popup button:hover { background: var(--primary); }
         .show { display: flex !important; }
 
+        /* মোবাইল এবং ল্যান্ডস্কেপ অপ্টিমাইজেশন */
+        @media (max-width: 900px) {
+            :root {
+                --mask-top: -140px; /* মোবাইলে রিলেটেড ভিডিও হাইড রাখতে অপ্টিমাইজড */
+                --mask-height: 280px;
+            }
+            
+            /* ফুলস্ক্রিন মোডে মোবাইলের জন্য বিশেষ ফিক্স */
+            .player-wrapper:fullscreen .video-ratio, 
+            .player-wrapper:-webkit-full-screen .video-ratio {
+                padding-top: 0;
+                height: 100vh;
+            }
+
+            .player-wrapper:fullscreen #yt-player, 
+            .player-wrapper:-webkit-full-screen #yt-player {
+                top: -15vh !important; /* স্ক্রিন হাইট অনুযায়ী মাস্কিং */
+                height: 130vh !important;
+            }
+
+            .controls { padding: 10px 15px 30px 15px; } /* নিচে ৩০ পিক্সেল সেফ জোন */
+            .btn { font-size: 16px; }
+            .menu-popup { bottom: 65px; width: 100px; }
+        }
+
+        .hidden { display: none !important; }
         #custom-thumb {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: url('thumbnail.png') no-repeat center center; background-size: cover;
             z-index: 20; display: flex; justify-content: center; align-items: center; cursor: pointer;
         }
-        #custom-thumb i { font-size: 65px; color: white; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
-
-        /* ৪. রেসপনসিভ ফিক্স */
-        @media (max-width: 600px) {
-            #yt-player { transform: translate(-50%, -50%) scale(1.4); } /* মোবাইলে ভারসাম্য রাখা */
-            .controls { padding: 10px 12px 25px 12px; }
-            .btn { font-size: 16px; }
-            .player-wrapper { width: 96%; }
-        }
-
-        .hidden { display: none !important; }
+        #custom-thumb i { font-size: 60px; color: white; }
     </style>
 </head>
 <body onclick="manageControls()">
@@ -101,36 +120,40 @@
             <button onclick="setSpeed(2)">2x</button>
         </div>
 
-        <div class="menu-popup" id="qualityMenu" style="right: 55px;">
+        <div class="menu-popup" id="qualityMenu" style="right: 60px;">
             <button onclick="setQuality('hd1080')">1080p</button>
             <button onclick="setQuality('hd720')">720p</button>
             <button onclick="setQuality('large')">480p</button>
         </div>
 
         <div class="controls" id="ui-bar">
-            <button class="btn" onclick="playPause()"><i id="p-icon" class="fas fa-play"></i></button>
-            <button class="btn" onclick="rewind()"><i class="fas fa-undo"></i></button>
-            <button class="btn" onclick="forward()"><i class="fas fa-redo"></i></button>
+            <div class="control-group">
+                <button class="btn" onclick="playPause()"><i id="p-icon" class="fas fa-play"></i></button>
+                <button class="btn" onclick="rewind()"><i class="fas fa-undo"></i></button>
+                <button class="btn" onclick="forward()"><i class="fas fa-redo"></i></button>
+            </div>
 
             <input type="range" class="seek-bar" id="seek" value="0" step="0.1" oninput="doSeek(this.value)">
-            
             <div class="time-display" id="timer">-00:00</div>
 
-            <button class="btn" onclick="toggleMenu('speedMenu', event)"><span id="speedTxt" style="font-size: 12px; font-weight:bold;">1x</span></button>
-            <button class="btn" onclick="toggleMenu('qualityMenu', event)"><i class="fas fa-cog"></i></button>
-            <button class="btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
+            <div class="control-group">
+                <button class="btn" onclick="toggleMenu('speedMenu', event)"><span id="speedTxt" style="font-size: 13px; font-weight:bold;">1x</span></button>
+                <button class="btn" onclick="toggleMenu('qualityMenu', event)"><i class="fas fa-cog"></i></button>
+                <button class="btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    var player, hideTimeout;
+    var player;
     var vidId = 'lBvbNxiVmZA'; 
+    var hideTimeout;
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('yt-player', {
             videoId: vidId,
-            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1, 'fs': 0, 'origin': window.location.origin },
+            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1, 'fs': 0 },
             events: { 'onStateChange': onStateChange }
         });
     }
@@ -205,7 +228,7 @@
 
     function setQuality(q) {
         if(player.setPlaybackQuality) player.setPlaybackQuality(q);
-        document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
+        document.getElementById('qualityMenu').classList.remove('show');
     }
 
     async function toggleFull() {
