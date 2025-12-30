@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Udvash Pro Player - Settings Hub</title>
+    <title>Udvash Pro Player - Mobile Center Fix</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -11,14 +11,14 @@
         body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; overflow: hidden; }
 
         .player-wrapper {
-            width: 92%; max-width: 850px; position: relative;
+            width: 95%; max-width: 850px; position: relative;
             background: #000; border-radius: 12px; overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
 
-        .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
+        .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 
-        /* ডেক্সটপ মাস্কিং - আরও ৪০ পিক্সেল বাড়ানো হয়েছে */
+        /* ডেক্সটপ মাস্কিং - সর্বোচ্চ লেভেলে */
         #yt-player {
             position: absolute; 
             top: -240px; 
@@ -27,6 +27,26 @@
             height: calc(100% + 480px); 
             z-index: 1; 
             pointer-events: none;
+        }
+
+        /* মোবাইল ভার্সন - আলাদা কোড */
+        @media (max-width: 600px) {
+            #yt-player { 
+                top: 0 !important; /* কোনো মাস্কিং থাকবে না */
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                position: absolute;
+            }
+            .player-wrapper { width: 98%; border-radius: 8px; }
+            .controls { padding: 5px 10px 18px 10px !important; } /* নিচে সেফ প্যাডিং */
+            #f-btn { margin-right: 10px; } /* আইকন বামে সরানো */
+        }
+
+        /* ফুলস্ক্রিন মোড - ভিডিও সেন্টারিং ফিক্স */
+        :fullscreen #yt-player, :-webkit-full-screen #yt-player {
+            top: 0 !important;
+            height: 100% !important;
         }
 
         .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer; }
@@ -41,7 +61,7 @@
         /* কন্ট্রোল প্যানেল */
         .controls {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            background: linear-gradient(transparent, rgba(0,0,0,0.95));
             padding: 10px 15px; display: flex; align-items: center; gap: 10px;
             z-index: 100; box-sizing: border-box; transition: opacity 0.4s ease; opacity: 0;
         }
@@ -55,29 +75,16 @@
         .settings-menu {
             position: absolute; bottom: 60px; right: 20px;
             background: var(--panel-bg); border-radius: 8px;
-            display: none; flex-direction: column; width: 150px;
+            display: none; flex-direction: column; width: 140px;
             border: 1px solid #444; z-index: 110; overflow: hidden;
         }
         .menu-item {
-            padding: 12px; color: white; cursor: pointer; font-size: 14px;
+            padding: 12px; color: white; cursor: pointer; font-size: 13px;
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid #333;
         }
-        .menu-item:hover { background: #333; }
         .submenu { display: none; flex-direction: column; }
         .show { display: flex !important; }
-
-        /* মোবাইল ভার্সন - আলাদা মাস্কিং ও বাটন পজিশন */
-        @media (max-width: 600px) {
-            #yt-player { top: -60px; height: calc(100% + 120px); } /* মাস্কিং কমানো হয়েছে */
-            .player-wrapper { width: 98%; }
-            .controls { padding: 5px 10px 15px 10px; gap: 5px; }
-            .btn { font-size: 16px; padding: 8px; } /* টাচ এরিয়া বাড়ানো */
-            
-            /* ফুলস্ক্রিন আইকন আরও বামে চাপানো */
-            #f-btn { margin-right: 5px; }
-            .settings-menu { width: 130px; bottom: 50px; right: 10px; }
-        }
 
         .hidden { display: none !important; }
     </style>
@@ -123,7 +130,6 @@
             <div class="time-display" id="timer">-00:00</div>
 
             <button class="btn" onclick="toggleMainMenu(event)"><i class="fas fa-cog"></i></button>
-            
             <button class="btn" id="f-btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
         </div>
     </div>
@@ -157,7 +163,7 @@
                 bar.classList.remove('active');
                 closeAllMenus();
             }
-        }, 4000);
+        }, 3000);
     }
 
     function onStateChange(e) {
@@ -195,7 +201,6 @@
         }, 1000);
     }
 
-    // মেনু লজিক
     function toggleMainMenu(e) {
         e.stopPropagation();
         let m = document.getElementById('mainMenu');
