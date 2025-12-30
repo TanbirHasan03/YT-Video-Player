@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Udvash Pro Player - Auto Landscape</title>
+    <title>Udvash Pro Player - Ultimate Masking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -18,32 +18,36 @@
 
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
+        /* নরমাল মোড মাস্কিং */
         #yt-player {
             position: absolute; 
             top: 50%;
             left: -1%;
             width: 102%; 
-            height: calc(100% + 500px); 
+            height: calc(100% + 500px); /* ডেক্সটপে মাস্কিং */
             transform: translateY(-50%); 
             z-index: 1; 
             pointer-events: none;
         }
 
-        /* ফুলস্ক্রিন রেশিও ফিক্স (১৬:৯) */
+        /* ফুলস্ক্রিন মোড মাস্কিং এবং ১৬:৯ রেশিও ফিক্স */
         :fullscreen .video-ratio, :-webkit-full-screen .video-ratio {
             padding-top: 0 !important;
-            height: 100% !important;
-            width: 100% !important;
+            height: 100vh !important;
+            width: 100vw !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
+            background: #000 !important;
         }
 
+        /* ফুলস্ক্রিন অবস্থায় ভিডিওর টাইটেল ও লোগো হাইড করার প্রফেশনাল মাস্কিং */
         :fullscreen #yt-player, :-webkit-full-screen #yt-player {
             width: 100vw !important;
-            height: 56.25vw !important; 
-            max-height: 100vh !important;
-            max-width: 177.78vh !important; 
+            /* ১৬:৯ রেশিও ঠিক রেখে মাস্কিংয়ের জন্য হাইট বাড়ানো হয়েছে */
+            height: calc(56.25vw + 400px) !important; 
+            max-width: 177.78vh !important;
+            max-height: calc(100vh + 400px) !important;
             top: 50% !important;
             left: 50% !important;
             transform: translate(-50%, -50%) !important;
@@ -66,10 +70,10 @@
         }
         .controls.active { opacity: 1; }
 
-        /* ফুলস্ক্রিনে কন্ট্রোল প্যানেল ফিক্স */
+        /* ফুলস্ক্রিন কন্ট্রোল প্যানেল সেফ জোন */
         :fullscreen .controls, :-webkit-full-screen .controls {
-            bottom: 10px !important;
-            padding: 10px 20px 25px 20px !important;
+            bottom: 20px !important;
+            padding: 10px 30px 30px 30px !important;
         }
 
         .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 5px; display: flex; align-items: center; }
@@ -157,7 +161,10 @@
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('yt-player', {
             videoId: vidId,
-            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1, 'fs': 0 },
+            playerVars: { 
+                'controls': 0, 'modestbranding': 1, 'rel': 0, 
+                'iv_load_policy': 3, 'disablekb': 1, 'fs': 0, 'showinfo': 0 
+            },
             events: { 'onStateChange': onStateChange }
         });
     }
@@ -246,38 +253,22 @@
         closeAllMenus();
     }
 
-    // ফুলস্ক্রিন ও অটো ল্যান্ডস্কেপ লজিক
     async function toggleFull() {
         let frame = document.getElementById('main-frame');
         let icon = document.getElementById('f-icon');
 
         if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-            if (frame.requestFullscreen) {
-                await frame.requestFullscreen();
-            } else if (frame.webkitRequestFullscreen) {
-                await frame.webkitRequestFullscreen();
-            }
+            if (frame.requestFullscreen) await frame.requestFullscreen();
+            else if (frame.webkitRequestFullscreen) await frame.webkitRequestFullscreen();
             
-            // মোবাইল ল্যান্ডস্কেপ লক (Auto Landscape)
             if (screen.orientation && screen.orientation.lock) {
-                try {
-                    await screen.orientation.lock('landscape');
-                } catch (e) {
-                    console.log("Orientation lock not supported or failed.");
-                }
+                try { await screen.orientation.lock('landscape'); } catch (e) {}
             }
             icon.className = "fas fa-compress";
         } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            }
-            
-            // ফুলস্ক্রিন থেকে বের হলে ওরিয়েন্টেশন আনলক করা
-            if (screen.orientation && screen.orientation.unlock) {
-                screen.orientation.unlock();
-            }
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
             icon.className = "fas fa-expand";
         }
     }
