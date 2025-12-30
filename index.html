@@ -3,66 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Udvash Style Ultra Player Pro</title>
+    <title>Udvash Style Final Fix</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #007bff; --panel-bg: rgba(0, 0, 0, 0.85); }
-        body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; overflow-x: hidden; }
+        :root { --primary: #007bff; --panel-bg: rgba(0, 0, 0, 0.9); }
+        body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; overflow: hidden; }
 
-        /* ১. মেইন হোল্ডার - সাইড মার্জিন ঠিক করা হয়েছে */
+        /* ১. মেইন হোল্ডার - সাইড মার্জিন ও শ্যাডো */
         .player-wrapper {
-            width: 92%; /* দুই পাশে গ্যাপ রাখার জন্য কমানো হয়েছে */
+            width: 90%; 
             max-width: 850px; 
             position: relative;
             background: #000; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
-        /* ২. মাস্কিং আরও বাড়ানো হয়েছে (Related Video বন্ধ করতে) */
+        /* ২. মাস্কিং আপডেট - আরও ২৫ পিক্সেল বাড়ানো হয়েছে (Related Video পুরোপুরি হাইড করতে) */
         #yt-player {
             position: absolute; 
-            top: -150px; /* আরও ২০ পিক্সেল বাড়ানো হয়েছে */
-            left: -2px;
-            width: calc(100% + 4px); /* সাইড গ্যাপ ফিক্স */
-            height: calc(100% + 300px); 
+            top: -175px; /* আগের চেয়ে আরও ২৫ পিক্সেল উপরে সরানো হয়েছে */
+            left: -1%;
+            width: 102%; 
+            height: calc(100% + 350px); /* মোট ৩৫০ পিক্সেল মাস্কিং */
             z-index: 1; 
             pointer-events: none;
         }
 
-        /* ৩. ইন্টারঅ্যাকশন লেয়ার */
         .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 
-        /* ৪. থাম্বনেইল */
+        /* ৩. থাম্বনেইল */
         #custom-thumb {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: url('thumbnail.png') no-repeat center center; background-size: cover;
             z-index: 20; display: flex; justify-content: center; align-items: center; cursor: pointer;
         }
-        #custom-thumb i { font-size: 60px; color: white; }
+        #custom-thumb i { font-size: 60px; color: white; opacity: 0.9; }
 
-        /* ৫. অটো-হাইড কন্ট্রোল বার */
+        /* ৪. অটো-হাইড কন্ট্রোল বার - মোবাইল ফিক্সড পজিশন */
         .controls {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            padding: 15px; display: flex; align-items: center; gap: 12px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.95));
+            padding: 15px 20px; display: flex; align-items: center; gap: 15px;
             z-index: 30; box-sizing: border-box;
-            transition: opacity 0.5s ease;
-            opacity: 0; /* শুরুতে হাইড থাকবে */
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            opacity: 0; transform: translateY(10px);
         }
-        .controls.active { opacity: 1; }
+        .controls.active { opacity: 1; transform: translateY(0); }
 
         .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; display: flex; align-items: center; }
         .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 5px; }
-        .time-display { color: white; font-size: 13px; font-family: monospace; min-width: 50px; }
+        .time-display { color: white; font-size: 13px; font-family: monospace; min-width: 55px; }
 
+        /* ৫. মেনু পপআপ */
         .menu-popup {
-            position: absolute; bottom: 65px; right: 10px;
+            position: absolute; bottom: 70px; right: 20px;
             background: var(--panel-bg); border-radius: 8px;
-            display: none; flex-direction: column; width: 110px;
-            border: 1px solid #444; z-index: 40;
+            display: none; flex-direction: column; width: 115px;
+            border: 1px solid #444; z-index: 40; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
         .menu-popup button {
             background: none; border: none; color: white; padding: 12px;
@@ -70,31 +70,35 @@
         }
         .show { display: flex !important; }
 
-        /* মোবাইল ফুলস্ক্রিন ও সাইড ফিক্স */
+        /* মোবাইল ফুলস্ক্রিন ফিক্স */
         @media (max-width: 600px) {
             .player-wrapper { width: 95%; }
-            #yt-player { top: -100px; height: calc(100% + 200px); }
-            .controls { padding: 10px; padding-bottom: 15px; } /* মোবাইলে একটু উপরে রাখা */
-            .btn { font-size: 16px; }
+            #yt-player { top: -110px; height: calc(100% + 220px); }
+            /* ফুলস্ক্রিনে কন্ট্রোল যাতে নিচে না কাটে */
+            .controls { padding: 10px 15px 25px 15px; bottom: 0px; } 
+            .btn { font-size: 17px; }
+            .menu-popup { bottom: 60px; right: 10px; width: 100px; }
         }
 
-        /* ফুলস্ক্রিন অবস্থায় কন্ট্রোল ঠিক রাখার জন্য */
-        :fullscreen .controls { bottom: 20px; }
-        :-webkit-full-screen .controls { bottom: 20px; }
+        /* ফুলস্ক্রিন মোডে কন্ট্রোল বারকে উপরে তোলা */
+        :fullscreen .controls, :-webkit-full-screen .controls {
+            bottom: 30px !important; 
+            padding-bottom: 20px;
+        }
 
         .hidden { display: none !important; }
     </style>
 </head>
-<body onclick="showControls()">
+<body onclick="manageControls()">
 
 <div class="player-wrapper" id="main-frame">
-    <div class="video-ratio" id="v-area">
+    <div class="video-ratio" id="video-area">
         <div id="custom-thumb" onclick="startVideo()">
             <i class="fas fa-play-circle"></i>
         </div>
 
         <div id="yt-player"></div>
-        <div class="shield" onclick="showControls()"></div>
+        <div class="shield" onclick="manageControls()"></div>
 
         <div class="menu-popup" id="speedMenu">
             <button onclick="setSpeed(0.5)">0.5x</button>
@@ -103,7 +107,7 @@
             <button onclick="setSpeed(2)">2x</button>
         </div>
 
-        <div class="menu-popup" id="qualityMenu" style="right: 50px;">
+        <div class="menu-popup" id="qualityMenu" style="right: 60px;">
             <button onclick="setQuality('hd1080')">1080p</button>
             <button onclick="setQuality('hd720')">720p</button>
             <button onclick="setQuality('large')">480p</button>
@@ -118,7 +122,7 @@
 
             <div class="time-display" id="timer">-00:00</div>
 
-            <button class="btn" onclick="toggleMenu('speedMenu', event)"><span id="speedTxt" style="font-size: 13px;">1x</span></button>
+            <button class="btn" onclick="toggleMenu('speedMenu', event)"><span id="speedTxt" style="font-size: 13px; font-weight:bold;">1x</span></button>
             <button class="btn" onclick="toggleMenu('qualityMenu', event)"><i class="fas fa-cog"></i></button>
             <button class="btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
         </div>
@@ -141,15 +145,17 @@
     function startVideo() {
         document.getElementById('custom-thumb').classList.add('hidden');
         player.playVideo();
-        showControls();
+        manageControls();
     }
 
-    function showControls() {
+    function manageControls() {
         let bar = document.getElementById('ui-bar');
         bar.classList.add('active');
         clearTimeout(hideTimeout);
+        
+        // ৩ সেকেন্ড পর অটো-হাইড হবে যদি ভিডিও চলতে থাকে
         hideTimeout = setTimeout(() => {
-            if (player.getPlayerState() == 1) { // ভিডিও চললে হাইড হবে
+            if (player && player.getPlayerState() == 1) {
                 bar.classList.remove('active');
                 document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
             }
@@ -160,7 +166,7 @@
         if (e.data == 1) {
             document.getElementById('p-icon').className = "fas fa-pause";
             updateUI();
-            showControls();
+            manageControls();
         } else {
             document.getElementById('p-icon').className = "fas fa-play";
             document.getElementById('ui-bar').classList.add('active');
@@ -170,11 +176,12 @@
     function playPause() {
         if (player.getPlayerState() == 1) player.pauseVideo();
         else player.playVideo();
+        manageControls();
     }
 
-    function rewind() { player.seekTo(player.getCurrentTime() - 10); showControls(); }
-    function forward() { player.seekTo(player.getCurrentTime() + 10); showControls(); }
-    function doSeek(v) { player.seekTo(player.getDuration() * (v / 100)); showControls(); }
+    function rewind() { player.seekTo(player.getCurrentTime() - 10); manageControls(); }
+    function forward() { player.seekTo(player.getCurrentTime() + 10); manageControls(); }
+    function doSeek(v) { player.seekTo(player.getDuration() * (v / 100)); manageControls(); }
 
     function updateUI() {
         setInterval(() => {
@@ -196,6 +203,7 @@
         let isShow = m.classList.contains('show');
         document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
         if(!isShow) m.classList.add('show');
+        manageControls(); // মেনু খুললে হাইড টাইমার রিসেট হবে
     }
 
     function setSpeed(s) {
@@ -225,6 +233,7 @@
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             icon.className = "fas fa-expand";
         }
+        manageControls();
     }
 
     var tag = document.createElement('script');
