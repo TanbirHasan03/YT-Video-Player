@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Udvash Pro Player - Mobile Center Fix</title>
+    <title>Pro Video Player - Hybrid Masking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -18,10 +18,10 @@
 
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 
-        /* ডেক্সটপ মাস্কিং - সর্বোচ্চ লেভেলে */
+        /* --- Desktop Masking (Default) --- */
         #yt-player {
             position: absolute; 
-            top: -240px; 
+            top: -240px; /* Desktop-e related vdo hide korte beshi masking */
             left: -1%;
             width: 102%; 
             height: calc(100% + 480px); 
@@ -29,21 +29,25 @@
             pointer-events: none;
         }
 
-        /* মোবাইল ভার্সন - আলাদা কোড */
-        @media (max-width: 600px) {
-            #yt-player { 
-                top: 0 !important; /* কোনো মাস্কিং থাকবে না */
-                left: 0 !important;
+        /* --- Mobile Specific Optimization --- */
+        @media (max-width: 768px) {
+            #yt-player {
+                top: 0 !important; /* Mobile-e upore kono masking thakbe na */
+                height: 100% !important; /* Normal height */
                 width: 100% !important;
-                height: 100% !important;
-                position: absolute;
+                left: 0 !important;
+                /* Vertical Center korar jonno logic */
+                display: flex;
+                align-items: center;
             }
-            .player-wrapper { width: 98%; border-radius: 8px; }
-            .controls { padding: 5px 10px 18px 10px !important; } /* নিচে সেফ প্যাডিং */
-            #f-btn { margin-right: 10px; } /* আইকন বামে সরানো */
+            /* Related vdo niche kacher jonno container ke aktu niche namano */
+            .video-ratio { padding-top: 56.25%; } 
+            
+            .controls { padding: 5px 10px 20px 10px !important; }
+            #f-btn { margin-right: 10px !important; }
         }
 
-        /* ফুলস্ক্রিন মোড - ভিডিও সেন্টারিং ফিক্স */
+        /* Fullscreen mode-e masking reset */
         :fullscreen #yt-player, :-webkit-full-screen #yt-player {
             top: 0 !important;
             height: 100% !important;
@@ -58,7 +62,7 @@
         }
         #custom-thumb i { font-size: 60px; color: white; }
 
-        /* কন্ট্রোল প্যানেল */
+        /* Controls */
         .controls {
             position: absolute; bottom: 0; left: 0; width: 100%;
             background: linear-gradient(transparent, rgba(0,0,0,0.95));
@@ -71,9 +75,9 @@
         .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 4px; }
         .time-display { color: white; font-size: 12px; font-family: monospace; min-width: 45px; }
 
-        /* সেটিংস হাব মেনু */
+        /* Settings Hub */
         .settings-menu {
-            position: absolute; bottom: 60px; right: 20px;
+            position: absolute; bottom: 65px; right: 20px;
             background: var(--panel-bg); border-radius: 8px;
             display: none; flex-direction: column; width: 140px;
             border: 1px solid #444; z-index: 110; overflow: hidden;
@@ -83,6 +87,7 @@
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid #333;
         }
+        .menu-item:hover { background: #333; }
         .submenu { display: none; flex-direction: column; }
         .show { display: flex !important; }
 
@@ -101,12 +106,12 @@
         <div class="shield" onclick="manageControls()"></div>
 
         <div class="settings-menu" id="mainMenu">
-            <div class="menu-item" onclick="openSub('speedSub')">Speed <i class="fas fa-chevron-right"></i></div>
+            <div class="menu-item" onclick="openSub('speedSub')">Playback Speed <i class="fas fa-chevron-right"></i></div>
             <div class="menu-item" onclick="openSub('qualitySub')">Quality <i class="fas fa-chevron-right"></i></div>
         </div>
 
         <div class="settings-menu submenu" id="speedSub">
-            <div class="menu-item" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Back</div>
+            <div class="menu-item" onclick="backToMain()" style="color: var(--primary);"><i class="fas fa-chevron-left"></i> Back</div>
             <div class="menu-item" onclick="setSpeed(0.5)">0.5x</div>
             <div class="menu-item" onclick="setSpeed(1)">Normal</div>
             <div class="menu-item" onclick="setSpeed(1.5)">1.5x</div>
@@ -114,7 +119,7 @@
         </div>
 
         <div class="settings-menu submenu" id="qualitySub">
-            <div class="menu-item" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Back</div>
+            <div class="menu-item" onclick="backToMain()" style="color: var(--primary);"><i class="fas fa-chevron-left"></i> Back</div>
             <div class="menu-item" onclick="setQuality('hd1080')">1080p</div>
             <div class="menu-item" onclick="setQuality('hd720')">720p</div>
             <div class="menu-item" onclick="setQuality('large')">480p</div>
@@ -163,7 +168,7 @@
                 bar.classList.remove('active');
                 closeAllMenus();
             }
-        }, 3000);
+        }, 4000);
     }
 
     function onStateChange(e) {
