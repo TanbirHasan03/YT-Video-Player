@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Udvash Style Pro Player - Fixed</title>
+    <title>Udvash Style Final Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -11,21 +11,20 @@
         body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
 
         .player-wrapper {
-            width: 95%; max-width: 850px; position: relative;
+            width: 98%; max-width: 850px; position: relative;
             background: #000; border-radius: 12px; overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        /* ভিডিও কন্টেইনার */
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
-        /* ইউটিউব আইফ্রেম মাস্কিং - উপরে ও নিচে সমানভাবে সরানো হয়েছে */
+        /* মাস্কিং আপডেট: দুই পাশ ঠিক রাখা হয়েছে এবং উপরে-নিচে আরও বাড়ানো হয়েছে */
         #yt-player {
             position: absolute; 
-            top: -120px; /* উপরে ১২০ পিক্সেল মাস্ক */
-            left: -2%;
-            width: 104%; 
-            height: calc(100% + 240px); /* মোট ২৪০ পিক্সেল বাড়তি (উপরে ১২০, নিচে ১২০) */
+            top: -130px; /* আরও ১০ পিক্সেল উপরে তোলা হয়েছে */
+            left: 0;
+            width: 100%; /* ৫ পিক্সেল কাটা বন্ধ করতে ১০০% রাখা হয়েছে */
+            height: calc(100% + 260px); /* মোট ২৬০ পিক্সেল বাড়তি মাস্কিং */
             z-index: 1; 
             pointer-events: none;
         }
@@ -38,41 +37,40 @@
             background: url('thumbnail.png') no-repeat center center; background-size: cover;
             z-index: 20; display: flex; justify-content: center; align-items: center; cursor: pointer;
         }
-        #custom-thumb i { font-size: 60px; color: white; opacity: 0.9; }
+        #custom-thumb i { font-size: 65px; color: white; opacity: 0.9; }
 
         /* কন্ট্রোল বার */
         .controls {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.95));
-            padding: 10px; display: flex; align-items: center; gap: 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.98));
+            padding: 12px; display: flex; align-items: center; gap: 12px;
             z-index: 30; box-sizing: border-box;
         }
 
-        .btn { background: none; border: none; color: white; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-        .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 4px; }
-        .time-display { color: white; font-size: 12px; font-family: monospace; min-width: 45px; }
+        .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; display: flex; align-items: center; }
+        .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 5px; }
+        .time-display { color: white; font-size: 13px; font-family: monospace; min-width: 50px; }
 
         /* মেনু পপআপ */
         .menu-popup {
-            position: absolute; bottom: 55px; right: 10px;
+            position: absolute; bottom: 60px; right: 10px;
             background: var(--panel-bg); border-radius: 8px;
             display: none; flex-direction: column; width: 110px;
             overflow: hidden; border: 1px solid #444; z-index: 40;
         }
         .menu-popup button {
-            background: none; border: none; color: white; padding: 10px;
-            text-align: center; cursor: pointer; font-size: 13px; border-bottom: 1px solid #333;
+            background: none; border: none; color: white; padding: 12px;
+            text-align: center; cursor: pointer; font-size: 14px; border-bottom: 1px solid #333;
         }
         .menu-popup button:hover { background: var(--primary); }
         .show { display: flex !important; }
 
-        /* মোবাইল স্পেশাল ফিক্স */
+        /* মোবাইল অপ্টিমাইজেশন */
         @media (max-width: 600px) {
             .controls { gap: 8px; padding: 8px; }
-            .btn { font-size: 14px; }
-            .time-display { font-size: 10px; min-width: 35px; }
-            #yt-player { top: -80px; height: calc(100% + 160px); } /* মোবাইলে মাস্কিং কিছুটা কমানো হয়েছে */
-            .menu-popup { width: 90px; bottom: 45px; }
+            .btn { font-size: 15px; }
+            .time-display { font-size: 11px; min-width: 40px; }
+            #yt-player { top: -90px; height: calc(100% + 180px); }
         }
 
         .hidden { display: none !important; }
@@ -96,7 +94,7 @@
             <button onclick="setSpeed(2)">2x</button>
         </div>
 
-        <div class="menu-popup" id="qualityMenu" style="right: 45px;">
+        <div class="menu-popup" id="qualityMenu" style="right: 50px;">
             <button onclick="setQuality('hd1080')">1080p</button>
             <button onclick="setQuality('hd720')">720p</button>
             <button onclick="setQuality('large')">480p</button>
@@ -112,7 +110,7 @@
 
             <div class="time-display" id="timer">-00:00</div>
 
-            <button class="btn" onclick="toggleMenu('speedMenu')"><span id="speedTxt" style="font-size: 12px; font-weight: bold;">1x</span></button>
+            <button class="btn" onclick="toggleMenu('speedMenu')"><span id="speedTxt" style="font-size: 13px; font-weight: bold;">1x</span></button>
             <button class="btn" onclick="toggleMenu('qualityMenu')"><i class="fas fa-cog"></i></button>
             <button class="btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
         </div>
@@ -126,11 +124,7 @@
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('yt-player', {
             videoId: vidId,
-            playerVars: { 
-                'controls': 0, 'modestbranding': 1, 'rel': 0, 
-                'iv_load_policy': 3, 'disablekb': 1, 'fs': 0,
-                'autohide': 1
-            },
+            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1 },
             events: { 'onStateChange': onStateChange }
         });
     }
@@ -190,23 +184,31 @@
         document.getElementById('qualityMenu').classList.remove('show');
     }
 
-    // Fullscreen Fix (Supports Mobile)
-    function toggleFull() {
+    // Fullscreen with Auto-Landscape Fix
+    async function toggleFull() {
         let frame = document.getElementById('main-frame');
         let icon = document.getElementById('f-icon');
 
         if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-            if (frame.requestFullscreen) frame.requestFullscreen();
-            else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+            if (frame.requestFullscreen) await frame.requestFullscreen();
+            else if (frame.webkitRequestFullscreen) await frame.webkitRequestFullscreen();
+            
+            // Landscape Mode Trigger
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock("landscape").catch(e => console.log("Orientation lock not supported"));
+            }
             icon.className = "fas fa-compress";
         } else {
             if (document.exitFullscreen) document.exitFullscreen();
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
             icon.className = "fas fa-expand";
         }
     }
 
-    // API Load
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
