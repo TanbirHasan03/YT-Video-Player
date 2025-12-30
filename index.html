@@ -3,281 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Media Player</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Udvash Style Custom Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --bg-color: #f0f0f5;
-            --text-color: #000;
-            --player-bg: #000;
-            --control-bar-bg: #2c313a;
-            --accent-color: #7289da;
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --text-color: #fff;
+            --primary-bg: #1a1c21;
+            --accent-blue: #007bff;
+            --white: #ffffff;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            background-color: #f4f7f6;
             margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* মেইন প্লেয়ার কন্টেইনার */
+        .player-wrapper {
+            position: relative;
+            width: 95%;
+            max-width: 850px;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            border: 4px solid #fff;
+        }
+
+        /* ইউটিউব ফ্রেম */
+        #yt-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* অদৃ্শ্য শিল্ড (Magic Layer) - এটি ইউটিউব ব্র্যান্ডিং হাইড রাখে */
+        .video-shield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 85%; /* নিচের কন্ট্রোল বার বাদে বাকি অংশ ঢেকে রাখবে */
+            z-index: 5;
+            background: transparent;
+        }
+
+        /* থাম্বনেইল লেয়ার */
+        .custom-thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('thumbnail.png') no-repeat center center;
+            background-size: cover;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .play-overlay-btn {
+            font-size: 70px;
+            color: rgba(255, 255, 255, 0.9);
             transition: 0.3s;
         }
 
-        /* Dark/Light Mode Switcher */
-        .theme-switch {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            font-size: 24px;
+        .custom-thumbnail:hover .play-overlay-btn {
+            transform: scale(1.1);
+            color: #ff0000;
         }
 
-        /* Player Container */
-        .player-wrapper {
-            position: relative;
-            width: 900px;
-            max-width: 95%;
-            aspect-ratio: 16/9;
-            background: #000;
-            border: 8px solid #ddd;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        }
-
-        /* Iframe Hiding YT UI */
-        #yt-player {
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Prevents interaction with YT elements */
-        }
-
-        /* Custom Control Bar */
-        .custom-controls {
+        /* কাস্টম কন্ট্রোল বার */
+        .control-bar {
             position: absolute;
             bottom: 0;
             left: 0;
-            right: 0;
-            background: var(--control-bar-bg);
-            height: 50px;
-            display: flex;
+            width: 100%;
+            height: 55px;
+            background: rgba(26, 28, 33, 0.95);
+            display: none; /* শুরুতে লুকানো থাকবে */
             align-items: center;
             padding: 0 15px;
-            gap: 15px;
-            color: #fff;
-            user-select: none;
+            box-sizing: border-box;
+            z-index: 15;
+            color: white;
         }
 
-        .control-btn {
+        .control-group { display: flex; align-items: center; gap: 15px; }
+
+        .btn {
             background: none;
             border: none;
-            color: #fff;
-            font-size: 18px;
+            color: white;
             cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
             transition: 0.2s;
         }
 
-        .control-btn:hover { color: #ccc; }
+        .btn:hover { color: var(--accent-blue); }
 
-        /* Progress Bar Styles */
-        .timeline-container {
+        .progress-container {
             flex-grow: 1;
+            margin: 0 15px;
             display: flex;
             align-items: center;
         }
 
-        #progress-bar {
+        .seek-bar {
             width: 100%;
-            height: 4px;
             cursor: pointer;
-            accent-color: #7289da;
+            accent-color: var(--accent-blue);
         }
 
-        /* Quality Popup */
-        .quality-menu {
-            position: absolute;
-            bottom: 60px;
-            right: 50px;
-            background: #2c313a;
+        .time-display {
+            font-size: 14px;
+            min-width: 60px;
+            font-family: monospace;
+        }
+
+        .speed-badge {
+            background: #333;
+            padding: 2px 8px;
             border-radius: 4px;
-            display: none;
-            flex-direction: column;
-        }
-
-        .quality-option {
-            padding: 8px 20px;
+            font-size: 12px;
             cursor: pointer;
-            border-bottom: 1px solid #444;
         }
-        .quality-option:hover { background: #444; }
-        .quality-option.active { background: #fff; color: #000; }
 
-        .time-display { font-size: 14px; font-family: monospace; }
-        .speed-display { font-size: 14px; cursor: pointer; font-weight: bold; }
+        /* ফুলস্ক্রিন অবস্থায় শিল্ড ম্যানেজমেন্ট */
+        .hide-item { display: none !important; }
+        .show-flex { display: flex !important; }
+
     </style>
 </head>
-<body data-theme="light">
+<body>
 
-    <div class="theme-switch" id="theme-toggle"><i class="fas fa-moon"></i></div>
-
-    <div class="player-wrapper" id="video-container">
+    <div class="player-wrapper" id="playerBox">
         <div id="yt-player"></div>
 
-        <div class="custom-controls">
-            <button class="control-btn" id="play-pause"><i class="fas fa-play"></i></button>
-            <button class="control-btn" id="rewind"><i class="fas fa-undo"></i></button>
-            <button class="control-btn" id="fast-forward"><i class="fas fa-redo"></i></button>
-            <button class="control-btn" id="mute-btn"><i class="fas fa-volume-up"></i></button>
+        <div class="video-shield" id="shield"></div>
 
-            <div class="timeline-container">
-                <input type="range" id="progress-bar" min="0" max="100" value="0">
+        <div class="custom-thumbnail" id="thumb" onclick="startPlayer()">
+            <i class="fas fa-play-circle play-overlay-btn"></i>
+        </div>
+
+        <div class="control-bar" id="controls">
+            <div class="control-group">
+                <button class="btn" onclick="togglePlay()"><i id="pIcon" class="fas fa-play"></i></button>
+                <button class="btn" onclick="skip(-10)"><i class="fas fa-undo"></i></button>
+                <button class="btn" onclick="skip(10)"><i class="fas fa-redo"></i></button>
             </div>
 
-            <div class="time-display" id="remaining-time">-0:00:00</div>
-            <div class="speed-display" id="speed-btn">1x</div>
-            
-            <button class="control-btn" id="settings-btn"><i class="fas fa-cog"></i></button>
-            <button class="control-btn" id="fullscreen-btn"><i class="fas fa-expand"></i></button>
+            <div class="progress-container">
+                <input type="range" class="seek-bar" id="seekBar" value="0" step="0.1" oninput="manualSeek(this.value)">
+            </div>
 
-            <div class="quality-menu" id="quality-menu">
-                <div class="quality-option">1080p</div>
-                <div class="quality-option active">720p</div>
-                <div class="quality-option">480p</div>
+            <div class="time-display" id="timeRemaining">-00:00</div>
+
+            <div class="control-group" style="margin-left: 10px;">
+                <div class="speed-badge" onclick="changeSpeed()" id="speedBtn">1x</div>
+                <button class="btn" onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
             </div>
         </div>
     </div>
 
-<script>
-    // 1. Initialize YouTube API
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    <script>
+        var player;
+        var videoId = 'lBvbNxiVmZA'; // আপনার ভিডিও আইডি
 
-    var player;
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('yt-player', {
-            videoId: '0XODdktEkh4', // Your requested video
-            playerVars: {
-                'controls': 0,
-                'modestbranding': 1,
-                'rel': 0,
-                'showinfo': 0,
-                'iv_load_policy': 3,
-                'disablekb': 1,
-                'fs': 0
-            },
-            events: {
-                'onReady': onPlayerReady
-            }
-        });
-    }
+        // ইউটিউব API লোড
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-    function onPlayerReady(event) {
-        const playBtn = document.getElementById('play-pause');
-        const progressBar = document.getElementById('progress-bar');
-        const remainingTimeText = document.getElementById('remaining-time');
-        const speedBtn = document.getElementById('speed-btn');
-        const muteBtn = document.getElementById('mute-btn');
-        const settingsBtn = document.getElementById('settings-btn');
-        const qualityMenu = document.getElementById('quality-menu');
-
-        // Play / Pause
-        playBtn.addEventListener('click', () => {
-            if (player.getPlayerState() == 1) {
-                player.pauseVideo();
-                playBtn.innerHTML = '<i class="fas fa-play"></i>';
-            } else {
-                player.playVideo();
-                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            }
-        });
-
-        // Rewind & Forward (10 seconds)
-        document.getElementById('rewind').addEventListener('click', () => {
-            player.seekTo(player.getCurrentTime() - 10);
-        });
-        document.getElementById('fast-forward').addEventListener('click', () => {
-            player.seekTo(player.getCurrentTime() + 10);
-        });
-
-        // Timeline Logic
-        setInterval(() => {
-            if (player && player.getCurrentTime) {
-                const current = player.getCurrentTime();
-                const total = player.getDuration();
-                const progress = (current / total) * 100;
-                progressBar.value = progress;
-
-                // Time remaining logic like your screenshot (-3:25:25)
-                let remaining = total - current;
-                let h = Math.floor(remaining / 3600);
-                let m = Math.floor((remaining % 3600) / 60);
-                let s = Math.floor(remaining % 60);
-                remainingTimeText.innerText = `-${h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
-            }
-        }, 1000);
-
-        progressBar.addEventListener('input', () => {
-            const seekTo = player.getDuration() * (progressBar.value / 100);
-            player.seekTo(seekTo);
-        });
-
-        // Speed Control
-        let speeds = [0.5, 1, 1.5, 2];
-        let currentSpeedIdx = 1;
-        speedBtn.addEventListener('click', () => {
-            currentSpeedIdx = (currentSpeedIdx + 1) % speeds.length;
-            let newSpeed = speeds[currentSpeedIdx];
-            player.setPlaybackRate(newSpeed);
-            speedBtn.innerText = newSpeed + 'x';
-        });
-
-        // Mute
-        muteBtn.addEventListener('click', () => {
-            if (player.isMuted()) {
-                player.unMute();
-                muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-            } else {
-                player.mute();
-                muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-            }
-        });
-
-        // Settings (Quality) Menu Toggle
-        settingsBtn.addEventListener('click', () => {
-            qualityMenu.style.display = qualityMenu.style.display === 'flex' ? 'none' : 'flex';
-        });
-
-        // Fullscreen
-        document.getElementById('fullscreen-btn').addEventListener('click', () => {
-            const container = document.getElementById('video-container');
-            if (container.requestFullscreen) container.requestFullscreen();
-            else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
-        });
-    }
-
-    // Theme Switcher Logic
-    const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('click', () => {
-        const body = document.body;
-        if (body.getAttribute('data-theme') === 'light') {
-            body.setAttribute('data-theme', 'dark');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        } else {
-            body.setAttribute('data-theme', 'light');
-            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'controls': 0,           // ইউটিউব কন্ট্রোল বন্ধ
+                    'modestbranding': 1,    // লোগো কমানো
+                    'rel': 0,               // রিলেটেড ভিডিও বন্ধ
+                    'showinfo': 0,
+                    'iv_load_policy': 3,
+                    'disablekb': 1,         // কিবোর্ড শর্টকাট বন্ধ
+                    'fs': 0,                // ইউটিউব ফুলস্ক্রিন বাটন বন্ধ
+                    'playsinline': 1,
+                    'origin': window.location.origin
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
         }
-    });
-</script>
+
+        function startPlayer() {
+            document.getElementById('thumb').classList.add('hide-item');
+            document.getElementById('controls').classList.add('show-flex');
+            player.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                document.getElementById('pIcon').className = "fas fa-pause";
+                updateProgress();
+            } else {
+                document.getElementById('pIcon').className = "fas fa-play";
+            }
+        }
+
+        function togglePlay() {
+            if (player.getPlayerState() == YT.PlayerState.PLAYING) player.pauseVideo();
+            else player.playVideo();
+        }
+
+        function skip(sec) {
+            player.seekTo(player.getCurrentTime() + sec, true);
+        }
+
+        function manualSeek(val) {
+            player.seekTo(player.getDuration() * (val / 100), true);
+        }
+
+        function updateProgress() {
+            setInterval(() => {
+                if (player && player.getCurrentTime) {
+                    let curr = player.getCurrentTime();
+                    let total = player.getDuration();
+                    document.getElementById('seekBar').value = (curr / total) * 100;
+                    
+                    let rem = total - curr;
+                    let m = Math.floor(rem / 60);
+                    let s = Math.floor(rem % 60);
+                    document.getElementById('timeRemaining').innerText = "-" + m + ":" + (s < 10 ? '0' + s : s);
+                }
+            }, 1000);
+        }
+
+        function changeSpeed() {
+            let rates = [0.5, 1, 1.5, 2];
+            let current = player.getPlaybackRate();
+            let next = rates[(rates.indexOf(current) + 1) % rates.length];
+            player.setPlaybackRate(next);
+            document.getElementById('speedBtn').innerText = next + 'x';
+        }
+
+        function toggleFullscreen() {
+            let p = document.getElementById('playerBox');
+            if (!document.fullscreenElement) p.requestFullscreen();
+            else document.exitFullscreen();
+        }
+
+        // মাউস রাইট ক্লিক বন্ধ (Security)
+        document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
 </body>
 </html>
