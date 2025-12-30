@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pro Video Player - Final Mobile Fix</title>
+    <title>Pro Player - Final Mobile Fullscreen Fix</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -18,7 +18,7 @@
 
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
-        /* মাস্কিং - ডেক্সটপ ও মোবাইলের জন্য আলাদা ক্যালকুলেশন */
+        /* মাস্কিং ক্যালকুলেশন */
         #yt-player {
             position: absolute; 
             top: -180px; 
@@ -27,6 +27,12 @@
             height: calc(100% + 360px); 
             z-index: 1; 
             pointer-events: none;
+        }
+
+        /* ফুলস্ক্রিন মোডে মাস্কিং কমিয়ে কন্ট্রোল বার রক্ষা করা */
+        :fullscreen #yt-player, :-webkit-full-screen #yt-player {
+            top: -100px !important;
+            height: calc(100% + 200px) !important;
         }
 
         .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
@@ -38,23 +44,28 @@
         }
         #custom-thumb i { font-size: 60px; color: white; }
 
-        /* কন্ট্রোল বার - ফ্লেক্সবক্স দিয়ে আইকন সাজানো */
+        /* কন্ট্রোল প্যানেল */
         .controls {
             position: absolute; bottom: 0; left: 0; width: 100%;
             background: linear-gradient(transparent, rgba(0,0,0,0.95));
             padding: 12px 15px; display: flex; align-items: center; 
-            justify-content: space-between; /* আইকনগুলো দুই পাশে ছড়িয়ে থাকবে */
+            justify-content: space-between;
             z-index: 30; box-sizing: border-box;
             transition: opacity 0.4s ease; opacity: 0;
         }
         .controls.active { opacity: 1; }
+
+        /* ফুলস্ক্রিনে কন্ট্রোল বার যেন না কাটে */
+        :fullscreen .controls, :-webkit-full-screen .controls {
+            bottom: 10px !important;
+            padding: 10px 20px 30px 20px !important;
+        }
 
         .control-group { display: flex; align-items: center; gap: 12px; }
         .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 5px; }
         .seek-bar { flex-grow: 1; margin: 0 10px; cursor: pointer; accent-color: var(--primary); height: 5px; }
         .time-display { color: white; font-size: 12px; font-family: monospace; min-width: 45px; }
 
-        /* পপআপ মেনু */
         .menu-popup {
             position: absolute; bottom: 60px; right: 15px;
             background: var(--panel-bg); border-radius: 8px;
@@ -67,14 +78,12 @@
         }
         .show { display: flex !important; }
 
-        /* মোবাইল স্পেশাল ফিক্স (Samsung S8+ ও অন্যান্য) */
         @media (max-width: 600px) {
-            #yt-player { top: -110px; height: calc(100% + 220px); } /* মোবাইলে মাস্কিং অ্যাডজাস্ট */
-            .controls { padding: 8px 10px 20px 10px; } /* নিচে গ্যাপ বাড়ানো হয়েছে */
+            #yt-player { top: -120px; height: calc(100% + 240px); }
+            .controls { padding: 8px 10px 20px 10px; }
             .btn { font-size: 16px; padding: 4px; }
             .control-group { gap: 8px; }
-            .time-display { font-size: 10px; min-width: 35px; }
-            .menu-popup { width: 95px; bottom: 50px; right: 5px; }
+            .menu-popup { width: 100px; bottom: 55px; right: 10px; }
         }
 
         .hidden { display: none !important; }
@@ -147,7 +156,7 @@
         bar.classList.add('active');
         clearTimeout(hideTimeout);
         hideTimeout = setTimeout(() => {
-            if (player.getPlayerState() == 1) {
+            if (player && player.getPlayerState() == 1) {
                 bar.classList.remove('active');
                 document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
             }
