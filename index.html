@@ -3,86 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pro Video Player - Professional Fix</title>
+    <title>Pro Video Player - Nested Menu Version</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --primary: #007bff; --panel-bg: rgba(0, 0, 0, 0.9); }
+        :root { --primary: #007bff; --panel-bg: rgba(15, 15, 15, 0.98); }
         body { background: #eef0f2; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; overflow: hidden; }
 
         .player-wrapper {
             width: 95%; max-width: 850px; position: relative;
             background: #000; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
         .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
 
-        /* ইউটিউব মাস্কিং - রিলেটেড ভিডিও হাইড করতে এবং ভিডিও সেন্টারিং */
+        /* ডেক্সটপ মাস্কিং - আরও ৪০ পিক্সেল বাড়ানো হয়েছে */
         #yt-player {
             position: absolute; 
-            top: -200px; /* উপরে ২০০ পিক্সেল মাস্ক */
+            top: -240px; 
             left: -1%;
             width: 102%; 
-            height: calc(100% + 400px); /* নিচেও ২০০ পিক্সেল মাস্ক (মোট ৪০০) */
+            height: calc(100% + 480px); 
             z-index: 1; 
             pointer-events: none;
         }
 
-        /* ইন্টারঅ্যাকশন গার্ড */
-        .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer; }
+        .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 
         #custom-thumb {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: url('thumbnail.png') no-repeat center center; background-size: cover;
-            z-index: 20; display: flex; justify-content: center; align-items: center;
+            z-index: 20; display: flex; justify-content: center; align-items: center; cursor: pointer;
         }
-        #custom-thumb i { font-size: 65px; color: white; opacity: 0.9; }
+        #custom-thumb i { font-size: 60px; color: white; opacity: 0.9; }
 
-        /* কন্ট্রোল প্যানেল - প্রফেশনাল ফিক্স */
+        /* কন্ট্রোল বার */
         .controls {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.98));
-            padding: 15px; display: flex; align-items: center; gap: 10px;
-            z-index: 100; box-sizing: border-box; /* জেন-ইনডেক্স ১০০ করা হয়েছে */
-            transition: opacity 0.4s ease; opacity: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.95));
+            padding: 15px; display: flex; align-items: center; gap: 12px;
+            z-index: 100; box-sizing: border-box; transition: opacity 0.4s ease; opacity: 0;
         }
         .controls.active { opacity: 1; }
 
-        .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; min-width: 30px; display: flex; align-items: center; justify-content: center; }
+        .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; display: flex; align-items: center; padding: 5px; }
         .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 5px; }
-        .time-display { color: white; font-size: 13px; font-family: monospace; min-width: 50px; text-align: center; }
+        .time-display { color: white; font-size: 13px; font-family: monospace; min-width: 50px; }
 
-        /* মেনু পপআপ */
-        .menu-popup {
+        /* সেটিংস মেনু ডিজাইন (Nested) */
+        .settings-menu {
             position: absolute; bottom: 65px; right: 15px;
             background: var(--panel-bg); border-radius: 8px;
-            display: none; flex-direction: column; width: 110px;
-            border: 1px solid #444; z-index: 110;
+            display: none; flex-direction: column; width: 150px;
+            border: 1px solid #444; z-index: 110; overflow: hidden;
         }
-        .menu-popup button {
+        .menu-header { padding: 10px; border-bottom: 1px solid #333; display: flex; align-items: center; cursor: pointer; font-size: 13px; color: #aaa; }
+        .menu-header i { margin-right: 8px; }
+        .menu-item {
             background: none; border: none; color: white; padding: 12px;
-            text-align: center; cursor: pointer; font-size: 14px; border-bottom: 1px solid #333;
+            text-align: left; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; align-items: center;
         }
+        .menu-item:hover { background: rgba(255,255,255,0.1); }
         .show { display: flex !important; }
 
-        /* মোবাইল স্পেশাল রেসপনসিভ লজিক */
+        /* মোবাইল অপ্টিমাইজেশন */
         @media (max-width: 600px) {
-            #yt-player { top: -140px; height: calc(100% + 280px); } /* মোবাইলে মাস্কিং ব্যালেন্স */
-            .controls { padding-bottom: 25px; gap: 8px; } /* নিচে সেফ প্যাডিং */
-            .btn { font-size: 16px; }
-            .time-display { font-size: 11px; min-width: 40px; }
-            .menu-popup { width: 95px; bottom: 55px; }
-        }
-
-        /* ফুলস্ক্রিন মোড ফিক্স - প্যানেল যাতে না কাটে */
-        :fullscreen .controls, :-webkit-full-screen .controls {
-            bottom: 20px !important;
-            opacity: 1 !important; /* ফুলস্ক্রিনে বাটন যাতে স্পষ্ট থাকে */
-        }
-        :fullscreen #yt-player, :-webkit-full-screen #yt-player {
-            top: -120px !important;
-            height: calc(100% + 240px) !important;
+            #yt-player { top: -60px; height: calc(100% + 120px); } /* মাস্কিং কমানো হয়েছে যাতে প্যানেল না কাটে */
+            .controls { padding-bottom: 20px; }
+            .settings-menu { width: 130px; bottom: 60px; right: 10px; }
         }
 
         .hidden { display: none !important; }
@@ -99,17 +88,25 @@
         <div id="yt-player"></div>
         <div class="shield" onclick="manageControls()"></div>
 
-        <div class="menu-popup" id="speedMenu">
-            <button onclick="setSpeed(0.5)">0.5x</button>
-            <button onclick="setSpeed(1)">Normal</button>
-            <button onclick="setSpeed(1.5)">1.5x</button>
-            <button onclick="setSpeed(2)">2x</button>
+        <div class="settings-menu" id="mainSettings">
+            <button class="menu-item" onclick="openSubMenu('speedList')">Playback Speed <i class="fas fa-chevron-right"></i></button>
+            <button class="menu-item" onclick="openSubMenu('qualityList')">Quality <i class="fas fa-chevron-right"></i></button>
         </div>
 
-        <div class="menu-popup" id="qualityMenu" style="right: 55px;">
-            <button onclick="setQuality('hd1080')">1080p</button>
-            <button onclick="setQuality('hd720')">720p</button>
-            <button onclick="setQuality('large')">480p</button>
+        <div class="settings-menu" id="speedList">
+            <div class="menu-header" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Speed</div>
+            <button class="menu-item" onclick="setSpeed(0.5)">0.5x</button>
+            <button class="menu-item" onclick="setSpeed(1)">Normal</button>
+            <button class="menu-item" onclick="setSpeed(1.5)">1.5x</button>
+            <button class="menu-item" onclick="setSpeed(2)">2x</button>
+        </div>
+
+        <div class="settings-menu" id="qualityList">
+            <div class="menu-header" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Quality</div>
+            <button class="menu-item" onclick="setQuality('hd1080')">1080p</button>
+            <button class="menu-item" onclick="setQuality('hd720')">720p</button>
+            <button class="menu-item" onclick="setQuality('large')">480p</button>
+            <button class="menu-item" onclick="setQuality('auto')">Auto</button>
         </div>
 
         <div class="controls" id="ui-bar">
@@ -121,8 +118,8 @@
 
             <div class="time-display" id="timer">-00:00</div>
 
-            <button class="btn" onclick="toggleMenu('speedMenu', event)"><span id="speedTxt" style="font-size: 13px;">1x</span></button>
-            <button class="btn" onclick="toggleMenu('qualityMenu', event)"><i class="fas fa-cog"></i></button>
+            <button class="btn" onclick="toggleMenu('mainSettings', event)"><i class="fas fa-cog"></i></button>
+            
             <button class="btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
         </div>
     </div>
@@ -136,10 +133,7 @@
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('yt-player', {
             videoId: vidId,
-            playerVars: { 
-                'controls': 0, 'modestbranding': 1, 'rel': 0, 
-                'iv_load_policy': 3, 'disablekb': 1, 'fs': 0, 'autohide': 1
-            },
+            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1, 'fs': 0 },
             events: { 'onStateChange': onStateChange }
         });
     }
@@ -150,15 +144,48 @@
         manageControls();
     }
 
+    // মেনু কন্ট্রোল ফাংশন
+    function toggleMenu(id, event) {
+        if(event) event.stopPropagation();
+        let m = document.getElementById(id);
+        let isShow = m.classList.contains('show');
+        closeAllMenus();
+        if(!isShow) m.classList.add('show');
+    }
+
+    function openSubMenu(id) {
+        closeAllMenus();
+        document.getElementById(id).classList.add('show');
+    }
+
+    function backToMain() {
+        closeAllMenus();
+        document.getElementById('mainSettings').classList.add('show');
+    }
+
+    function closeAllMenus() {
+        document.querySelectorAll('.settings-menu').forEach(el => el.classList.remove('show'));
+    }
+
+    function setSpeed(s) {
+        player.setPlaybackRate(s);
+        closeAllMenus();
+    }
+
+    function setQuality(q) {
+        if(player.setPlaybackQuality) player.setPlaybackQuality(q);
+        closeAllMenus();
+    }
+
+    // প্লেয়ার কন্ট্রোলস
     function manageControls() {
         let bar = document.getElementById('ui-bar');
         bar.classList.add('active');
         clearTimeout(hideTimeout);
-        // ৩ সেকেন্ড পর অটো-হাইড
         hideTimeout = setTimeout(() => {
             if (player && player.getPlayerState() == 1) {
                 bar.classList.remove('active');
-                document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
+                closeAllMenus();
             }
         }, 3000);
     }
@@ -198,26 +225,6 @@
         }, 1000);
     }
 
-    function toggleMenu(id, event) {
-        event.stopPropagation();
-        let m = document.getElementById(id);
-        let isShow = m.classList.contains('show');
-        document.querySelectorAll('.menu-popup').forEach(el => el.classList.remove('show'));
-        if(!isShow) m.classList.add('show');
-        manageControls();
-    }
-
-    function setSpeed(s) {
-        player.setPlaybackRate(s);
-        document.getElementById('speedTxt').innerText = s + 'x';
-        document.getElementById('speedMenu').classList.remove('show');
-    }
-
-    function setQuality(q) {
-        if(player.setPlaybackQuality) player.setPlaybackQuality(q);
-        document.getElementById('qualityMenu').classList.remove('show');
-    }
-
     async function toggleFull() {
         let frame = document.getElementById('main-frame');
         let icon = document.getElementById('f-icon');
@@ -239,6 +246,12 @@
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
+
+    window.onclick = function(event) {
+        if (!event.target.closest('.btn') && !event.target.closest('.settings-menu')) {
+            closeAllMenus();
+        }
+    }
 </script>
 
 </body>
