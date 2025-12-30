@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom YouTube Player - Fixed</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --player-black: #000000;
+            --control-bg: #1c1e23;
+            --accent: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: sans-serif;
+        }
+
+        /* রেসপনসিভ কন্টেইনার */
+        .video-wrapper {
+            position: relative;
+            width: 95%;
+            max-width: 900px;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border: 8px solid white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* ইউটিউব আইফ্রেম কন্টেইনার */
+        #player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* ইউটিউবের নিজস্ব ক্লিক বন্ধ রাখার জন্য */
+        }
+
+        /* থাম্বনেইল লেয়ার */
+        .thumbnail-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('thumbnail.png') no-repeat center center;
+            background-size: cover;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* কাস্টম কন্ট্রোল বার */
+        .control-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--control-bg);
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            box-sizing: border-box;
+            z-index: 15;
+            color: white;
+            opacity: 0; /* শুরুতে লুকানো থাকবে */
+            transition: opacity 0.3s;
+        }
+
+        .video-wrapper:hover .control-bar {
+            opacity: 1;
+        }
+
+        .btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        .progress-area {
+            flex-grow: 1;
+            margin: 0 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type=range] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: #7289da;
+        }
+
+        .time-text {
+            font-size: 14px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* কোয়ালিটি সেটিংস বক্স */
+        .quality-menu {
+            position: absolute;
+            bottom: 55px;
+            right: 40px;
+            background: #2a2d33;
+            border-radius: 4px;
+            display: none;
+            flex-direction: column;
+            z-index: 20;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .quality-menu button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .quality-menu button:hover {
+            background: #444;
+        }
+
+        .show { display: flex !important; }
+        .hide { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="video-wrapper" id="videoWrapper">
+        <div id="player"></div>
+
+        <div class="thumbnail-layer" id="thumb" onclick="startVideo()">
+            <i class="fas fa-play" style="font-size: 50px; color: white;"></i>
+        </div>
+
+        <div class="control-bar" id="controls">
+            <button class="btn" onclick="playPause()"><i id="playIcon" class="fas fa-play"></i></button>
+            <button class="btn" onclick="rewind()"><i class="fas fa-undo"></i></button>
+            <button class="btn" onclick="forward()"><i class="fas fa-redo"></i></button>
+            <button class="btn"><i class="fas fa-volume-up"></i></button>
+
+            <div class="progress-area">
+                <input type="range" id="seekBar" value="0" step="0.1" oninput="manualSeek(this.value)">
+            </div>
+
+            <div class="time-text" id="remainingTime">-0:00</div>
+            <div class="btn" style="font-size: 14px;" onclick="changeSpeed()">1x</div>
+
+            <button class="btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
+            <button class="btn" onclick="fullScreen()"><i class="fas fa-expand"></i></button>
+
+            <div class="quality-menu" id="qMenu">
+                <button onclick="setQuality('hd720')">720p</button>
+                <button onclick="setQuality('large')" style="background: #555;">480p</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ইউটিউব API লোড করা
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        var videoId = 'lBvbNxiVmZA'; // আপনার ভিডিও আইডি এখানে
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,          // ইউটিউব কন্ট্রোল বন্ধ
+                    'rel': 0,               // রিলেটেড ভিডিও বন্ধ
+                    'showinfo': 0,
+                    'modestbranding': 1,    // লোগো হাইড (সীমিত)
+                    'iv_load_policy': 3,
+                    'disablekb': 1,
+                    'origin': window.location.origin
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            console.log("Player Ready!");
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                document.getElementById('playIcon').className = "fas fa-pause";
+                updateProgress();
+            } else {
+                document.getElementById('playIcon').className = "fas fa-play";
+            }
+        }
+
+        function startVideo() {
+            document.getElementById('thumb').classList.add('hide');
+            document.getElementById('controls').style.opacity = "1";
+            player.playVideo();
+        }
+
+        function playPause() {
+            if (player.getPlayerState() == YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        }
+
+        function rewind() { player.seekTo(player.getCurrentTime() - 10, true); }
+        function forward() { player.seekTo(player.getCurrentTime() + 10, true); }
+
+        function manualSeek(val) {
+            var newTime = player.getDuration() * (val / 100);
+            player.seekTo(newTime, true);
+        }
+
+        function updateProgress() {
+            setInterval(function() {
+                if (player && player.getCurrentTime) {
+                    var curr = player.getCurrentTime();
+                    var total = player.getDuration();
+                    var perc = (curr / total) * 100;
+                    document.getElementById('seekBar').value = perc;
+
+                    var rem = total - curr;
+                    document.getElementById('remainingTime').innerText = "-" + formatTime(rem);
+                }
+            }, 1000);
+        }
+
+        function formatTime(sec) {
+            var m = Math.floor(sec / 60);
+            var s = Math.floor(sec % 60);
+            return m + ":" + (s < 10 ? "0" + s : s);
+        }
+
+        function changeSpeed() {
+            var current = player.getPlaybackRate();
+            var rates = player.getAvailablePlaybackRates();
+            var index = (rates.indexOf(current) + 1) % rates.length;
+            player.setPlaybackRate(rates[index]);
+            event.target.innerText = rates[index] + "x";
+        }
+
+        function toggleSettings() {
+            document.getElementById('qMenu').classList.toggle('show');
+        }
+
+        function setQuality(q) {
+            player.setPlaybackQuality(q);
+            toggleSettings();
+        }
+
+        function fullScreen() {
+            var el = document.getElementById('videoWrapper');
+            if (el.requestFullscreen) el.requestFullscreen();
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        }
+    </script>
+</body>
+</html>
