@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+  <title>Diploma Tutor - Civil Demo Class</title>   
+  <link href="img/logo.png" rel="icon">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root { --primary: #007bff; --panel-bg: rgba(15, 15, 15, 0.98); }
+    body { font-family: 'Anek Bangla', sans-serif; background-color: #eef2f5; color: #333; margin: 0; }
+
+    /* --- Navbar Styles --- */
+    .navbar { background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    .navbar-brand img { height: 50px; }
+    .navbar-nav .nav-link { font-weight: 600; color: #333; }
+
+    /* --- Custom Video Player Styles (From video.html) --- */
+    .player-wrapper {
+        width: 100%; max-width: 850px; position: relative;
+        background: #000; border-radius: 12px; overflow: hidden;
+        margin: 20px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .video-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
+
+    #yt-player {
+        position: absolute; top: 50%; left: -1%; width: 102%; 
+        height: calc(100% + 500px); transform: translateY(-50%); 
+        z-index: 1; pointer-events: none;
+    }
+
+    /* Fullscreen Handling */
+    :fullscreen .video-ratio, :-webkit-full-screen .video-ratio { padding-top: 0 !important; height: 100vh !important; width: 100vw !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #000 !important; }
+    :fullscreen #yt-player, :-webkit-full-screen #yt-player { width: 100vw !important; height: calc(56.25vw + 400px) !important; max-width: 177.78vh !important; max-height: calc(100vh + 400px) !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; }
+
+    .shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer; }
+    #custom-thumb {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: url('img/civil_thumbnail.png') no-repeat center center; background-size: cover;
+        z-index: 20; display: flex; justify-content: center; align-items: center; cursor: pointer;
+    }
+    #custom-thumb i { font-size: 60px; color: white; opacity: 0.9; }
+
+    .controls {
+        position: absolute; bottom: 0; left: 0; width: 100%;
+        background: linear-gradient(transparent, rgba(0,0,0,0.95));
+        padding: 10px 15px; display: flex; align-items: center; gap: 10px;
+        z-index: 100; box-sizing: border-box; transition: opacity 0.4s ease; opacity: 0;
+    }
+    .controls.active { opacity: 1; }
+
+    .btn-ctrl { background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 5px; display: flex; align-items: center; }
+    .seek-bar { flex-grow: 1; cursor: pointer; accent-color: var(--primary); height: 4px; }
+    .time-display { color: white; font-size: 12px; font-family: monospace; min-width: 45px; }
+
+    /* Settings Menu */
+    .settings-menu {
+        position: absolute; bottom: 60px; right: 20px;
+        background: var(--panel-bg); border-radius: 8px;
+        display: none; flex-direction: column; width: 150px;
+        border: 1px solid #444; z-index: 110; overflow: hidden;
+    }
+    .menu-item { padding: 12px; color: white; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+    .menu-item:hover { background: #333; }
+    .show { display: flex !important; }
+    .hidden { display: none !important; }
+
+    /* --- Page Decorations --- */
+    .container { padding: 40px 15px; }
+    h1 { text-align: center; font-weight: 700; margin-bottom: 30px; }
+    h2 { color: #007bff; font-weight: 700; border-left: 5px solid #007bff; padding-left: 15px; margin: 30px 0; }
+
+    /* --- Footer --- */
+    .footer-section { margin-top: 60px; background: linear-gradient(135deg, #0a3d62, #1e90ff); color: #fff; padding: 50px 0 15px; }
+    .footer-links a { color: #fff; text-decoration: none; }
+  </style>
+</head>
+<body onclick="manageControls()">
+
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="index.html"><img src="img/logo1.png" alt="Logo" id="navbar-logo"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="index.html">হোম</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.html">কোর্স</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html">আমাদের সম্পর্কে</a></li>
+            </ul>
+        </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Civil Department | Demo Class</h1>
+    
+    <h2>Topic: Introduction to Civil</h2>
+
+    <div class="player-wrapper" id="main-frame">
+        <div class="video-ratio">
+            <div id="custom-thumb" onclick="startVideo()">
+                <i class="fas fa-play-circle"></i>
+            </div>
+
+            <div id="yt-player"></div>
+            
+            <div class="shield" onclick="manageControls()"></div>
+
+            <div class="settings-menu" id="mainMenu">
+                <div class="menu-item" onclick="openSub('speedSub')">Speed <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="openSub('qualitySub')">Quality <i class="fas fa-chevron-right"></i></div>
+            </div>
+
+            <div class="settings-menu" id="speedSub" style="display:none">
+                <div class="menu-item" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Back</div>
+                <div class="menu-item" onclick="setSpeed(0.5)">0.5x</div>
+                <div class="menu-item" onclick="setSpeed(1)">Normal</div>
+                <div class="menu-item" onclick="setSpeed(1.5)">1.5x</div>
+                <div class="menu-item" onclick="setSpeed(2)">2x</div>
+            </div>
+
+            <div class="settings-menu" id="qualitySub" style="display:none">
+                <div class="menu-item" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Back</div>
+                <div class="menu-item" onclick="setQuality('hd1080')">1080p</div>
+                <div class="menu-item" onclick="setQuality('hd720')">720p</div>
+                <div class="menu-item" onclick="setQuality('large')">480p</div>
+            </div>
+
+            <div class="controls" id="ui-bar">
+                <button class="btn-ctrl" onclick="playPause()"><i id="p-icon" class="fas fa-play"></i></button>
+                <button class="btn-ctrl" onclick="rewind()"><i class="fas fa-undo"></i></button>
+                <button class="btn-ctrl" onclick="forward()"><i class="fas fa-redo"></i></button>
+
+                <input type="range" class="seek-bar" id="seek" value="0" step="0.1" oninput="doSeek(this.value)">
+
+                <div class="time-display" id="timer">-00:00</div>
+
+                <button class="btn-ctrl" onclick="toggleMainMenu(event)"><i class="fas fa-cog"></i></button>
+                <button class="btn-ctrl" id="f-btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+  <footer class="footer-section">
+    <div class="container text-center">
+      <h5 style="font-weight:700">Diploma Tutor</h5>
+      <p>শিক্ষার্থীদের একাডেমিক প্রস্তুতির জন্য নির্ভরযোগ্য প্ল্যাটফর্ম।</p>
+      <div class="py-3">
+        <a href="index.html" class="mx-2">হোম</a> | 
+        <a href="about.html" class="mx-2">আমাদের সম্পর্কে</a>
+      </div>
+      <p class="mt-3" style="font-size:0.9rem; opacity:0.8;">© 2025 Diploma Tutor | Built by Tanbir Hasan</p>
+    </div>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+  <script>
+    var player;
+    var vidId = 'Wa92K2fUSjs'; // আপনার ইউটিউব ভিডিও আইডি এখানে দিন
+    var hideTimeout;
+
+    // Load YouTube API
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('yt-player', {
+            videoId: vidId,
+            playerVars: { 
+                'controls': 0, 'modestbranding': 1, 'rel': 0, 
+                'iv_load_policy': 3, 'disablekb': 1, 'fs': 0, 'showinfo': 0 
+            },
+            events: { 'onStateChange': onStateChange }
+        });
+    }
+
+    function startVideo() {
+        document.getElementById('custom-thumb').classList.add('hidden');
+        player.playVideo();
+        manageControls();
+    }
+
+    function manageControls() {
+        let bar = document.getElementById('ui-bar');
+        bar.classList.add('active');
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+            if (player && player.getPlayerState() == 1) {
+                bar.classList.remove('active');
+                closeAllMenus();
+            }
+        }, 4000);
+    }
+
+    function onStateChange(e) {
+        if (e.data == 1) {
+            document.getElementById('p-icon').className = "fas fa-pause";
+            updateUI();
+            manageControls();
+        } else {
+            document.getElementById('p-icon').className = "fas fa-play";
+            document.getElementById('ui-bar').classList.add('active');
+        }
+    }
+
+    function playPause() {
+        if (player.getPlayerState() == 1) player.pauseVideo();
+        else player.playVideo();
+        manageControls();
+    }
+
+    function rewind() { player.seekTo(player.getCurrentTime() - 10); manageControls(); }
+    function forward() { player.seekTo(player.getCurrentTime() + 10); manageControls(); }
+    function doSeek(v) { player.seekTo(player.getDuration() * (v / 100)); manageControls(); }
+
+    function updateUI() {
+        setInterval(() => {
+            if (player && player.getCurrentTime) {
+                let curr = player.getCurrentTime();
+                let total = player.getDuration();
+                if(total > 0) {
+                    document.getElementById('seek').value = (curr / total) * 100;
+                    let rem = total - curr;
+                    let m = Math.floor(rem / 60);
+                    let s = Math.floor(rem % 60);
+                    document.getElementById('timer').innerText = "-" + m + ":" + (s < 10 ? '0' + s : s);
+                }
+            }
+        }, 1000);
+    }
+
+    function toggleMainMenu(e) {
+        e.stopPropagation();
+        let m = document.getElementById('mainMenu');
+        let isShowing = m.classList.contains('show');
+        closeAllMenus();
+        if(!isShowing) m.classList.add('show');
+    }
+
+    function openSub(id) {
+        closeAllMenus();
+        document.getElementById(id).style.display = 'flex';
+        document.getElementById(id).classList.add('show');
+    }
+
+    function backToMain() {
+        closeAllMenus();
+        document.getElementById('mainMenu').classList.add('show');
+    }
+
+    function closeAllMenus() {
+        document.querySelectorAll('.settings-menu').forEach(el => {
+            el.classList.remove('show');
+            if(el.id !== 'mainMenu') el.style.display = 'none';
+        });
+    }
+
+    function setSpeed(s) {
+        player.setPlaybackRate(s);
+        closeAllMenus();
+    }
+
+    function setQuality(q) {
+        if(player.setPlaybackQuality) player.setPlaybackQuality(q);
+        closeAllMenus();
+    }
+
+    async function toggleFull() {
+        let frame = document.getElementById('main-frame');
+        let icon = document.getElementById('f-icon');
+
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            if (frame.requestFullscreen) await frame.requestFullscreen();
+            else if (frame.webkitRequestFullscreen) await frame.webkitRequestFullscreen();
+            icon.className = "fas fa-compress";
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            icon.className = "fas fa-expand";
+        }
+    }
+  </script>
+</body>
+</html>
