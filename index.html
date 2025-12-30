@@ -3,62 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Udvash Style Custom Player</title>
+    <title>Udvash Style Pro Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary-bg: #1a1c21;
-            --accent-blue: #007bff;
-            --white: #ffffff;
-        }
+        body { background: #e0e4e8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
 
-        body {
-            background-color: #f4f7f6;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* মেইন প্লেয়ার কন্টেইনার */
-        .player-wrapper {
+        /* ১. মেইন কন্টেইনার - যা সবকিছু কাটছাঁট করবে */
+        .master-container {
             position: relative;
-            width: 95%;
+            width: 90%;
             max-width: 850px;
             aspect-ratio: 16 / 9;
             background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            border: 4px solid #fff;
+            border-radius: 10px;
+            overflow: hidden; /* এটিই টাইটেল ও লোগো হাইড করবে */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 5px solid #fff;
         }
 
-        /* ইউটিউব ফ্রেম */
+        /* ২. ইউটিউব আইফ্রেম - একে জুম করে টাইটেল ও লোগো ফ্রেমের বাইরে পাঠানো হয়েছে */
         #yt-player {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 50%;
+            left: 50%;
+            width: 115%; /* জুম করা হয়েছে */
+            height: 115%; /* জুম করা হয়েছে */
+            transform: translate(-50%, -50%); /* সেন্টারে আনা হয়েছে */
             z-index: 1;
         }
 
-        /* অদৃ্শ্য শিল্ড (Magic Layer) - এটি ইউটিউব ব্র্যান্ডিং হাইড রাখে */
+        /* ৩. ভিডিও শিল্ড - যা সব ধরণের মাউস ক্লিক ব্লক করবে */
         .video-shield {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 85%; /* নিচের কন্ট্রোল বার বাদে বাকি অংশ ঢেকে রাখবে */
+            height: 100%;
             z-index: 5;
             background: transparent;
+            cursor: default;
         }
 
-        /* থাম্বনেইল লেয়ার */
-        .custom-thumbnail {
+        /* ৪. থাম্বনেইল লেয়ার */
+        .thumbnail-overlay {
             position: absolute;
             top: 0;
             left: 0;
@@ -73,26 +61,17 @@
             cursor: pointer;
         }
 
-        .play-overlay-btn {
-            font-size: 70px;
-            color: rgba(255, 255, 255, 0.9);
-            transition: 0.3s;
-        }
+        .play-icon { font-size: 80px; color: white; opacity: 0.9; }
 
-        .custom-thumbnail:hover .play-overlay-btn {
-            transform: scale(1.1);
-            color: #ff0000;
-        }
-
-        /* কাস্টম কন্ট্রোল বার */
-        .control-bar {
+        /* ৫. কাস্টম কন্ট্রোল বার */
+        .custom-controls {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 55px;
-            background: rgba(26, 28, 33, 0.95);
-            display: none; /* শুরুতে লুকানো থাকবে */
+            height: 50px;
+            background: rgba(23, 25, 29, 0.95);
+            display: none; /* শুরুতে হাইড */
             align-items: center;
             padding: 0 15px;
             box-sizing: border-box;
@@ -100,87 +79,40 @@
             color: white;
         }
 
-        .control-group { display: flex; align-items: center; gap: 15px; }
-
-        .btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 5px;
-            transition: 0.2s;
-        }
-
-        .btn:hover { color: var(--accent-blue); }
-
-        .progress-container {
-            flex-grow: 1;
-            margin: 0 15px;
-            display: flex;
-            align-items: center;
-        }
-
-        .seek-bar {
-            width: 100%;
-            cursor: pointer;
-            accent-color: var(--accent-blue);
-        }
-
-        .time-display {
-            font-size: 14px;
-            min-width: 60px;
-            font-family: monospace;
-        }
-
-        .speed-badge {
-            background: #333;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        /* ফুলস্ক্রিন অবস্থায় শিল্ড ম্যানেজমেন্ট */
-        .hide-item { display: none !important; }
-        .show-flex { display: flex !important; }
-
+        .btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; margin-right: 15px; }
+        .progress-bar { flex-grow: 1; cursor: pointer; accent-color: #007bff; margin-right: 15px; }
+        .time-text { font-size: 14px; min-width: 60px; font-family: monospace; }
+        
+        .active { display: flex !important; }
+        .hide { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="player-wrapper" id="playerBox">
+    <div class="master-container" id="playerBox">
         <div id="yt-player"></div>
 
         <div class="video-shield" id="shield"></div>
 
-        <div class="custom-thumbnail" id="thumb" onclick="startPlayer()">
-            <i class="fas fa-play-circle play-overlay-btn"></i>
+        <div class="thumbnail-overlay" id="thumb" onclick="startVideo()">
+            <i class="fas fa-play-circle play-icon"></i>
         </div>
 
-        <div class="control-bar" id="controls">
-            <div class="control-group">
-                <button class="btn" onclick="togglePlay()"><i id="pIcon" class="fas fa-play"></i></button>
-                <button class="btn" onclick="skip(-10)"><i class="fas fa-undo"></i></button>
-                <button class="btn" onclick="skip(10)"><i class="fas fa-redo"></i></button>
-            </div>
-
-            <div class="progress-container">
-                <input type="range" class="seek-bar" id="seekBar" value="0" step="0.1" oninput="manualSeek(this.value)">
-            </div>
-
-            <div class="time-display" id="timeRemaining">-00:00</div>
-
-            <div class="control-group" style="margin-left: 10px;">
-                <div class="speed-badge" onclick="changeSpeed()" id="speedBtn">1x</div>
-                <button class="btn" onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
-            </div>
+        <div class="custom-controls" id="controlBar">
+            <button class="btn" onclick="togglePlay()"><i id="playBtn" class="fas fa-play"></i></button>
+            <button class="btn" onclick="skip(-10)"><i class="fas fa-undo"></i></button>
+            
+            <input type="range" class="progress-bar" id="seek" value="0" step="0.1" oninput="manualSeek(this.value)">
+            
+            <button class="btn" onclick="skip(10)"><i class="fas fa-redo"></i></button>
+            <div class="time-text" id="timeLeft">-00:00</div>
+            <button class="btn" onclick="fullScreen()"><i class="fas fa-expand"></i></button>
         </div>
     </div>
 
     <script>
         var player;
-        var videoId = 'lBvbNxiVmZA'; // আপনার ভিডিও আইডি
+        var vID = 'lBvbNxiVmZA'; // আপনার ভিডিও আইডি
 
         // ইউটিউব API লোড
         var tag = document.createElement('script');
@@ -192,83 +124,68 @@
             player = new YT.Player('yt-player', {
                 height: '100%',
                 width: '100%',
-                videoId: videoId,
+                videoId: vID,
                 playerVars: {
-                    'controls': 0,           // ইউটিউব কন্ট্রোল বন্ধ
-                    'modestbranding': 1,    // লোগো কমানো
-                    'rel': 0,               // রিলেটেড ভিডিও বন্ধ
+                    'controls': 0,
+                    'modestbranding': 1,
+                    'rel': 0,
                     'showinfo': 0,
                     'iv_load_policy': 3,
-                    'disablekb': 1,         // কিবোর্ড শর্টকাট বন্ধ
-                    'fs': 0,                // ইউটিউব ফুলস্ক্রিন বাটন বন্ধ
+                    'disablekb': 1,
+                    'fs': 0,
                     'playsinline': 1,
                     'origin': window.location.origin
                 },
-                events: {
-                    'onStateChange': onPlayerStateChange
-                }
+                events: { 'onStateChange': stateChanged }
             });
         }
 
-        function startPlayer() {
-            document.getElementById('thumb').classList.add('hide-item');
-            document.getElementById('controls').classList.add('show-flex');
+        function startVideo() {
+            document.getElementById('thumb').classList.add('hide');
+            document.getElementById('controlBar').classList.add('active');
             player.playVideo();
         }
 
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING) {
-                document.getElementById('pIcon').className = "fas fa-pause";
-                updateProgress();
-            } else {
-                document.getElementById('pIcon').className = "fas fa-play";
-            }
-        }
-
         function togglePlay() {
-            if (player.getPlayerState() == YT.PlayerState.PLAYING) player.pauseVideo();
+            if (player.getPlayerState() == 1) player.pauseVideo();
             else player.playVideo();
         }
 
-        function skip(sec) {
-            player.seekTo(player.getCurrentTime() + sec, true);
+        function stateChanged(e) {
+            if (e.data == 1) {
+                document.getElementById('playBtn').className = "fas fa-pause";
+                trackTime();
+            } else {
+                document.getElementById('playBtn').className = "fas fa-play";
+            }
         }
 
-        function manualSeek(val) {
-            player.seekTo(player.getDuration() * (val / 100), true);
-        }
+        function skip(sec) { player.seekTo(player.getCurrentTime() + sec, true); }
 
-        function updateProgress() {
+        function manualSeek(val) { player.seekTo(player.getDuration() * (val / 100), true); }
+
+        function trackTime() {
             setInterval(() => {
                 if (player && player.getCurrentTime) {
                     let curr = player.getCurrentTime();
                     let total = player.getDuration();
-                    document.getElementById('seekBar').value = (curr / total) * 100;
+                    document.getElementById('seek').value = (curr / total) * 100;
                     
                     let rem = total - curr;
                     let m = Math.floor(rem / 60);
                     let s = Math.floor(rem % 60);
-                    document.getElementById('timeRemaining').innerText = "-" + m + ":" + (s < 10 ? '0' + s : s);
+                    document.getElementById('timeLeft').innerText = "-" + m + ":" + (s < 10 ? '0' + s : s);
                 }
             }, 1000);
         }
 
-        function changeSpeed() {
-            let rates = [0.5, 1, 1.5, 2];
-            let current = player.getPlaybackRate();
-            let next = rates[(rates.indexOf(current) + 1) % rates.length];
-            player.setPlaybackRate(next);
-            document.getElementById('speedBtn').innerText = next + 'x';
+        function fullScreen() {
+            let el = document.getElementById('playerBox');
+            if (el.requestFullscreen) el.requestFullscreen();
         }
 
-        function toggleFullscreen() {
-            let p = document.getElementById('playerBox');
-            if (!document.fullscreenElement) p.requestFullscreen();
-            else document.exitFullscreen();
-        }
-
-        // মাউস রাইট ক্লিক বন্ধ (Security)
-        document.addEventListener('contextmenu', event => event.preventDefault());
+        // সিকিউরিটির জন্য রাইট ক্লিক বন্ধ
+        document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
