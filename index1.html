@@ -20,21 +20,32 @@
       padding: 0;
     }
 
-    .container { width: 90%; max-width: 1200px; margin: 0 auto; padding: 20px; }
-
+    /* Header/Navbar Fix */
     .navbar { background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 0.5rem 1rem; }
     .navbar-brand img { height: 50px; }
-    .navbar-nav .nav-link { color: #333; font-weight: 600; }
+    .navbar-nav .nav-link { color: #333 !important; font-weight: 600; }
+
+    .container { width: 95%; max-width: 1200px; margin: 0 auto; padding: 20px 0; }
 
     h1 { text-align: center; color: black; margin-bottom: 30px; font-size: 2.5rem; font-weight: 700; }
-    h2 { color: #007bff; margin: 20px 0; font-size: 1.75rem; font-weight: 700; position: relative; padding-bottom: 10px; }
-    h2::after { content: ''; position: absolute; left: 0; bottom: 0; height: 4px; width: 50px; background-color: #007bff; border-radius: 2px; }
+    
+    /* Underline Fix (Full Width) */
+    h2 { 
+      color: #007bff; 
+      margin: 20px 0; 
+      font-size: 1.75rem; 
+      font-weight: 700; 
+      position: relative; 
+      padding-bottom: 10px; 
+      border-bottom: 4px solid #007bff; /* Underline now follows text width/full block */
+      display: block;
+    }
 
-    /* --- Video Player Section (Isolated) --- */
+    /* --- Video Player Section (Optimized for Mobile) --- */
     .v-player-wrapper {
-        width: 100%; max-width: 850px; position: relative;
-        background: #000; border-radius: 12px; overflow: hidden;
-        margin: 0 auto 40px auto; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        width: 100%; max-width: 900px; position: relative;
+        background: #000; border-radius: 8px; overflow: hidden;
+        margin: 0 auto 40px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
     .v-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
@@ -45,8 +56,8 @@
         z-index: 1; pointer-events: none;
     }
 
-    /* Fullscreen Masking */
-    :fullscreen .v-ratio, :-webkit-full-screen .v-ratio { padding-top: 0 !important; height: 100vh !important; width: 100vw !important; display: flex !important; align-items: center !important; justify-content: center !important; background: #000 !important; }
+    /* Fullscreen & Landscape Fix */
+    :fullscreen .v-ratio, :-webkit-full-screen .v-ratio { padding-top: 0 !important; height: 100vh !important; width: 100vw !important; }
     :fullscreen #yt-player, :-webkit-full-screen #yt-player { width: 100vw !important; height: calc(56.25vw + 400px) !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; }
 
     .v-shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer; }
@@ -56,66 +67,61 @@
         background: url('img/civil_thumbnail.png') no-repeat center center; background-size: cover;
         z-index: 20; display: flex; justify-content: center; align-items: center; cursor: pointer;
     }
-    #v-custom-thumb i { font-size: 60px; color: white; }
+    #v-custom-thumb i { font-size: 60px; color: white; opacity: 0.9; }
 
-    /* Mobile Fix for Controls */
+    /* Controls UI - Padding Adjusted for Mobile Fullscreen Icon */
     .v-controls {
         position: absolute; bottom: 0; left: 0; width: 100%;
-        background: linear-gradient(transparent, rgba(0,0,0,0.95));
-        padding: 10px 15px; display: flex; align-items: center; gap: 10px;
-        z-index: 100; box-sizing: border-box; transition: opacity 0.4s ease; opacity: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.9));
+        padding: 5px 10px; display: flex; align-items: center; gap: 8px;
+        z-index: 100; transition: opacity 0.4s ease; opacity: 0;
     }
     .v-controls.active { opacity: 1; }
 
-    /* Mobile Setting Icon & UI Fix */
-    @media (max-width: 600px) {
-        #yt-player { height: calc(100% + 140px); }
-        .v-controls { padding: 5px 10px 15px 10px; gap: 5px; }
-        .v-btn { font-size: 16px; padding: 8px; }
-        .v-settings-menu { width: 130px; bottom: 55px; right: 10px; }
-    }
-
     .v-btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 5px; display: flex; align-items: center; outline: none !important; }
     .v-seek-bar { flex-grow: 1; cursor: pointer; accent-color: #007bff; height: 4px; }
-    .v-time-display { color: white; font-size: 12px; font-family: monospace; min-width: 45px; }
+    .v-time-display { color: white; font-size: 12px; font-family: monospace; min-width: 45px; text-align: center; }
 
+    /* Setting Menu Fix */
     .v-settings-menu {
-        position: absolute; bottom: 65px; right: 20px;
+        position: absolute; bottom: 50px; right: 10px;
         background: rgba(15, 15, 15, 0.98); border-radius: 8px;
-        display: none; flex-direction: column; width: 150px;
+        display: none; flex-direction: column; width: 140px;
         border: 1px solid #444; z-index: 110; overflow: hidden;
     }
-    .v-menu-item { padding: 12px; color: white; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; text-decoration: none !important; }
-    .v-menu-item:hover { background: #333; color: white; }
+    .v-menu-item { padding: 10px 15px; color: white; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+    .v-menu-item:hover { background: #333; }
     .v-show { display: flex !important; }
     .v-hidden { display: none !important; }
 
-    /* --- FOOTER SECTION (Same to Same as Main Website) --- */
-    .footer-section {
-        margin-top: 60px;
-        background: linear-gradient(135deg, #0a3d62, #1e90ff);
-        color: #fff;
-        padding: 50px 0 15px 0;
-        border-top: 3px solid rgba(255,255,255,0.2);
-        box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+    @media (max-width: 600px) {
+        .v-btn { font-size: 16px; padding: 4px; }
+        .v-controls { gap: 4px; padding: 5px 5px 10px 5px; }
+        .v-time-display { font-size: 10px; min-width: 35px; }
     }
-    .footer-title { font-weight: 700; font-size: 1.5rem; color: #ffffff; margin-bottom: 15px; letter-spacing: 1px; }
-    .footer-text { color: #f0f0f0; font-size: 1rem; line-height: 1.6; }
-    .footer-links li { margin-bottom: 8px; font-size: 1rem; color: #fff; list-style: none; }
-    .footer-links a { color: #fff; text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
-    .footer-links a:hover { color: #ffd700; text-decoration: underline; }
-    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); margin-top: 25px; padding-top: 10px; text-align: center; }
-    .footer-bottom p { margin: 5px 0; font-size: 0.95rem; color: #e8e8e8; }
-    .credit a { color: #ffd700; text-decoration: none; }
-    @media (max-width:768px) { .footer-section { text-align: center; } .footer-links { padding: 0; } }
+
+    /* --- FOOTER SECTION (Same to Same as Main) --- */
+    .footer-section {
+      margin-top: 60px;
+      background: linear-gradient(135deg, #0a3d62, #1e90ff);
+      color: #fff;
+      padding: 50px 0 20px 0;
+    }
+    .footer-title { font-weight: 700; font-size: 1.5rem; margin-bottom: 15px; }
+    .footer-text { font-size: 1rem; opacity: 0.9; }
+    .footer-links { list-style: none; padding: 0; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: #fff; text-decoration: none; transition: 0.3s; }
+    .footer-links a:hover { color: #ffd700; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); margin-top: 30px; padding-top: 20px; }
   </style>
 </head>
 <body onclick="manageControls()">
 
   <nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container">
+    <div class="container py-0">
       <a class="navbar-brand" href="index.html">
-        <img src="img/logo1.png" alt="Logo" id="navbar-logo">
+        <img src="img/logo1.png" alt="Logo">
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -131,10 +137,8 @@
   </nav>
 
   <div class="container">
-    <div class="header">
-      <h1>Civil Department | Demo Class</h1>
-    </div>
-
+    <h1>Civil Department | Demo Class</h1>
+    
     <h2>Context Name</h2>
 
     <div class="v-player-wrapper" id="main-frame">
@@ -142,7 +146,6 @@
             <div id="v-custom-thumb" onclick="startVideo()">
                 <i class="fas fa-play-circle"></i>
             </div>
-
             <div id="yt-player"></div>
             <div class="v-shield" onclick="manageControls()"></div>
 
@@ -150,14 +153,14 @@
                 <div class="v-menu-item" onclick="openSub('speedSub')">Speed <i class="fas fa-chevron-right"></i></div>
                 <div class="v-menu-item" onclick="openSub('qualitySub')">Quality <i class="fas fa-chevron-right"></i></div>
             </div>
-            <div class="v-settings-menu" id="speedSub">
+            <div class="v-settings-menu" id="speedSub" style="display:none">
                 <div class="v-menu-item" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Back</div>
                 <div class="v-menu-item" onclick="setSpeed(0.5)">0.5x</div>
                 <div class="v-menu-item" onclick="setSpeed(1)">Normal</div>
                 <div class="v-menu-item" onclick="setSpeed(1.5)">1.5x</div>
                 <div class="v-menu-item" onclick="setSpeed(2)">2x</div>
             </div>
-            <div class="v-settings-menu" id="qualitySub">
+            <div class="v-settings-menu" id="qualitySub" style="display:none">
                 <div class="v-menu-item" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Back</div>
                 <div class="v-menu-item" onclick="setQuality('hd1080')">1080p</div>
                 <div class="v-menu-item" onclick="setQuality('hd720')">720p</div>
@@ -171,20 +174,20 @@
                 <input type="range" class="v-seek-bar" id="seek" value="0" step="0.1" oninput="doSeek(this.value)">
                 <div class="v-time-display" id="timer">-00:00</div>
                 <button class="v-btn" onclick="toggleMainMenu(event)"><i class="fas fa-cog"></i></button>
-                <button class="v-btn" id="f-btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
+                <button class="v-btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
             </div>
         </div>
     </div>
   </div>
 
   <footer class="footer-section">
-    <div class="container">
+    <div class="container text-center">
       <div class="row justify-content-center">
-        <div class="col-md-5 mb-4 text-center">
+        <div class="col-md-5 mb-4">
           <h5 class="footer-title">Diploma Tutor</h5>
           <p class="footer-text">শিক্ষার্থীদের একাডেমিক প্রস্তুতির জন্য নির্ভরযোগ্য ও দক্ষ গাইডলাইন প্ল্যাটফর্ম।</p>
         </div>
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4 text-md-left">
           <h5 class="footer-title">Quick Links</h5>
           <ul class="footer-links">
             <li>• <a href="index.html">হোম</a></li>
@@ -195,7 +198,7 @@
       </div>
       <div class="footer-bottom">
         <p>© 2025 <strong>Diploma Tutor</strong> | All Rights Reserved</p>
-        <p class="credit">Website create by: <a href="https://facebook.com/TanbirHasan30" target="_blank"><strong>Tanbir Hasan</strong></a></p>
+        <p>Website create by: <a href="https://facebook.com/TanbirHasan30" target="_blank" style="color:#ffd700; text-decoration:none;"><strong>Tanbir Hasan</strong></a></p>
       </div>
     </div>
   </footer>
@@ -241,10 +244,8 @@
         if (e.data == 1) {
             document.getElementById('p-icon').className = "fas fa-pause";
             updateUI();
-            manageControls();
         } else {
             document.getElementById('p-icon').className = "fas fa-play";
-            document.getElementById('ui-bar').classList.add('active');
         }
     }
 
@@ -273,20 +274,35 @@
     }
 
     function toggleMainMenu(e) { e.stopPropagation(); closeAllMenus(); document.getElementById('mainMenu').classList.add('v-show'); }
-    function openSub(id) { closeAllMenus(); document.getElementById(id).classList.add('v-show'); }
+    function openSub(id) { closeAllMenus(); document.getElementById(id).style.display = 'flex'; document.getElementById(id).classList.add('v-show'); }
     function backToMain() { closeAllMenus(); document.getElementById('mainMenu').classList.add('v-show'); }
-    function closeAllMenus() { document.querySelectorAll('.v-settings-menu').forEach(el => el.classList.remove('v-show')); }
+    function closeAllMenus() { 
+        document.querySelectorAll('.v-settings-menu').forEach(el => {
+            el.classList.remove('v-show');
+            if(el.id !== 'mainMenu') el.style.display = 'none';
+        }); 
+    }
     function setSpeed(s) { player.setPlaybackRate(s); closeAllMenus(); }
     function setQuality(q) { if(player.setPlaybackQuality) player.setPlaybackQuality(q); closeAllMenus(); }
 
     async function toggleFull() {
         let frame = document.getElementById('main-frame');
-        if (!document.fullscreenElement) {
+        let icon = document.getElementById('f-icon');
+
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
             if (frame.requestFullscreen) await frame.requestFullscreen();
-            document.getElementById('f-icon').className = "fas fa-compress";
+            else if (frame.webkitRequestFullscreen) await frame.webkitRequestFullscreen();
+            
+            // Screen Rotation Fix for Mobile
+            if (screen.orientation && screen.orientation.lock) {
+                try { await screen.orientation.lock('landscape'); } catch (e) {}
+            }
+            icon.className = "fas fa-compress";
         } else {
             if (document.exitFullscreen) document.exitFullscreen();
-            document.getElementById('f-icon').className = "fas fa-expand";
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+            icon.className = "fas fa-expand";
         }
     }
   </script>
