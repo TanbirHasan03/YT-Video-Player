@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* --- Main Webpage Header & Design --- */
+    /* --- Main Webpage Design --- */
     body {
       font-family: 'Anek Bangla', 'Roboto', sans-serif;
       background-color: #eef2f5;
@@ -22,7 +22,7 @@
 
     .container { width: 95%; max-width: 1200px; margin: 0 auto; padding: 10px; }
 
-    /* Original Navbar */
+    /* Navbar */
     .navbar { 
       background-color: rgba(255, 255, 255, 0.8); 
       backdrop-filter: blur(8px); 
@@ -32,37 +32,18 @@
     .navbar-brand img { height: 45px; }
     .navbar-nav .nav-link { color: #333 !important; font-weight: 600; padding: 10px 15px; }
 
-    .header-title { 
-      text-align: center; 
-      color: black; 
-      margin: 20px 0; 
-      font-weight: 700; 
-      font-size: 1.8rem; 
-    }
+    .header-title { text-align: center; color: black; margin: 20px 0; font-weight: 700; font-size: 1.8rem; }
     @media (max-width: 576px) { .header-title { font-size: 1.3rem; } }
 
     .animated-heading { 
-      color: #007bff; 
-      margin: 15px 0; 
-      font-size: 1.5rem; 
-      font-weight: 700; 
-      position: relative; 
-      padding-bottom: 10px; 
-      width: fit-content;
+      color: #007bff; margin: 15px 0; font-size: 1.5rem; font-weight: 700; 
+      position: relative; padding-bottom: 10px; width: fit-content;
     }
     .animated-heading::after { 
-      content: ''; 
-      position: absolute; 
-      left: 0; 
-      bottom: 0; 
-      height: 4px; 
-      width: 50px; 
-      background-color: #007bff; 
-      border-radius: 2px; 
-      transition: width 0.5s;
+      content: ''; position: absolute; left: 0; bottom: 0; height: 4px; 
+      width: 50px; background-color: #007bff; border-radius: 2px; transition: width 0.5s;
     }
     .animated-heading:hover::after { width: 80%; }
-
     .topic-name { font-size: 1.2rem; color: #555; margin-top: -10px; margin-bottom: 25px; }
 
     /* --- Video Player Section --- */
@@ -72,15 +53,12 @@
         margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
     .v-ratio { position: relative; padding-top: 56.25%; background: #000; overflow: hidden; }
-
     #yt-player {
         position: absolute; top: 50%; left: -1%; width: 102%; 
         height: calc(100% + 500px); transform: translateY(-50%); 
         z-index: 1; pointer-events: none;
     }
-
     .v-shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer; }
-
     #v-custom-thumb {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: url('img/civil_thumbnail.png') no-repeat center center; background-size: cover;
@@ -92,41 +70,46 @@
         position: absolute; bottom: 0; left: 0; width: 100%;
         background: linear-gradient(transparent, rgba(0,0,0,0.9));
         padding: 5px 12px 10px 12px; display: flex; align-items: center; gap: 8px;
-        z-index: 100; box-sizing: border-box; transition: opacity 0.4s ease; opacity: 0;
+        z-index: 100; opacity: 0; transition: 0.4s;
     }
     .v-controls.active { opacity: 1; }
     .v-btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; outline: none !important; }
     .v-seek-bar { flex-grow: 1; accent-color: #007bff; height: 4px; }
     .v-time-display { color: white; font-size: 11px; min-width: 45px; }
 
-    /* --- Live Chat Section --- */
+    /* --- LIVE CHAT HIDE METHOD --- */
     .chat-container {
         width: 100%; max-width: 900px; margin: 0 auto 40px auto;
         background: #fff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; border-top: 2px solid #007bff;
     }
     .chat-header {
-        background: #f8f9fa; padding: 10px 20px; border-bottom: 1px solid #eee;
+        background: #f8f9fa; padding: 12px 20px; border-bottom: 1px solid #eee;
         display: flex; align-items: center; gap: 10px;
     }
-    .chat-header h5 { margin: 0; font-size: 1rem; font-weight: 700; color: #444; }
-    .live-dot { height: 8px; width: 8px; background-color: #ff3b30; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
+    .chat-header h5 { margin: 0; font-size: 1rem; font-weight: 700; color: #333; }
+    .live-dot { height: 8px; width: 8px; background-color: #ff3b30; border-radius: 50%; animation: blink 1s infinite; }
     
+    /* নিচের অংশ হাইড করার ম্যাজিক এখানে */
+    .chat-wrapper {
+        position: relative;
+        width: 100%;
+        height: 550px; /* এই হাইটটি চ্যাট বক্সের চেয়ে একটু কম রাখা হয়েছে */
+        overflow: hidden; /* এর ফলে নিচের Dead Simple Chat লেখাটি কেটে যাবে */
+    }
+    .chat-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 600px; /* অরিজিনাল চ্যাট বক্সের হাইট */
+        border: none;
+    }
+
     @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-    .v-settings-menu {
-        position: absolute; bottom: 55px; right: 15px;
-        background: rgba(15, 15, 15, 0.98); border-radius: 8px;
-        display: none; flex-direction: column; width: 140px; border: 1px solid #444; z-index: 110; overflow: hidden;
-    }
-    .v-menu-item { padding: 10px; color: white; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; border-bottom: 1px solid #333; }
-    .v-show { display: flex !important; }
-
-    /* --- FOOTER --- */
+    /* Footer */
     .footer-section { margin-top: 60px; background: linear-gradient(135deg, #0a3d62, #1e90ff); color: #fff; padding: 50px 0 15px 0; }
-    .footer-title { font-weight: 700; font-size: 1.5rem; margin-bottom: 15px; }
-    .footer-links { list-style: none; padding: 0; }
-    .footer-links a { color: #fff; text-decoration: none; }
     .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); margin-top: 25px; padding-top: 15px; }
 
     /* Fullscreen Fix */
@@ -137,16 +120,10 @@
 
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
-      <a class="navbar-brand" href="index.html">
-        <img src="img/logo1.png" alt="Logo">
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <a class="navbar-brand" href="index.html"><img src="img/logo1.png" alt="Logo"></a>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item"><a class="nav-link" href="index.html">হোম</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.html">কোর্স</a></li>
           <li class="nav-item"><a class="nav-link" href="about.html">আমাদের সম্পর্কে</a></li>
         </ul>
       </div>
@@ -156,34 +133,18 @@
   <div class="container">
     <h1 class="header-title">Civil Department | Demo Class</h1>
 
-    <h2 class="animated-heading">প্রফেশনাল গাইডলাইন</h2> 
-    <h2 class="animated-heading topic-name">সিভিল ইঞ্জিনিয়ারিং বেসিকস</h2>
+    <h2 class="animated-heading">Context Name</h2> 
+    <h2 class="animated-heading topic-name">Topic Name</h2>
 
     <div class="v-player-wrapper" id="main-frame">
         <div class="v-ratio">
-            <div id="v-custom-thumb" onclick="startVideo()">
-                <i class="fas fa-play-circle"></i>
-            </div>
+            <div id="v-custom-thumb" onclick="startVideo()"><i class="fas fa-play-circle"></i></div>
             <div id="yt-player"></div>
             <div class="v-shield" onclick="manageControls()"></div>
-
-            <div class="v-settings-menu" id="mainMenu">
-                <div class="v-menu-item" onclick="openSub('speedSub')">Speed <i class="fas fa-chevron-right"></i></div>
-            </div>
-            <div class="v-settings-menu" id="speedSub" style="display:none">
-                <div class="v-menu-item" onclick="backToMain()"><i class="fas fa-chevron-left"></i> Back</div>
-                <div class="v-menu-item" onclick="setSpeed(1)">Normal</div>
-                <div class="v-menu-item" onclick="setSpeed(1.5)">1.5x</div>
-                <div class="v-menu-item" onclick="setSpeed(2)">2x</div>
-            </div>
-
             <div class="v-controls" id="ui-bar">
                 <button class="v-btn" onclick="playPause()"><i id="p-icon" class="fas fa-play"></i></button>
-                <button class="v-btn" onclick="rewind()"><i class="fas fa-undo"></i></button>
-                <button class="v-btn" onclick="forward()"><i class="fas fa-redo"></i></button>
                 <input type="range" class="v-seek-bar" id="seek" value="0" step="0.1" oninput="doSeek(this.value)">
                 <div class="v-time-display" id="timer">-00:00</div>
-                <button class="v-btn" onclick="toggleMainMenu(event)"><i class="fas fa-cog"></i></button>
                 <button class="v-btn" onclick="toggleFull()"><i id="f-icon" class="fas fa-expand"></i></button>
             </div>
         </div>
@@ -192,24 +153,18 @@
     <div class="chat-container">
         <div class="chat-header">
             <span class="live-dot"></span>
-            <h5>লাইভ চ্যাট এবং প্রশ্ন উত্তর</h5>
+            <h5>লাইভ চ্যাট রুম</h5>
         </div>
-        <iframe src="https://deadsimplechat.com/A4m0C-_pO" width="100%" height="500px" frameborder="0"></iframe>
+        <div class="chat-wrapper">
+            <iframe src="https://deadsimplechat.com/A4m0C-_pO"></iframe>
+        </div>
     </div>
   </div>
 
   <footer class="footer-section">
-    <div class="container">
-      <div class="row justify-content-center text-center">
-        <div class="col-md-5 mb-4">
-          <h5 class="footer-title">Diploma Tutor</h5>
-          <p>শিক্ষার্থীদের একাডেমিক প্রস্তুতির জন্য নির্ভরযোগ্য ও দক্ষ গাইডলাইন প্ল্যাটফর্ম।</p>
-        </div>
-      </div>
-      <div class="footer-bottom text-center">
+    <div class="container text-center">
         <p>© 2025 <strong>Diploma Tutor</strong> | All Rights Reserved</p>
         <p>Website by: <a href="https://facebook.com/TanbirHasan30" style="color:#ffd700"><strong>Tanbir Hasan</strong></a></p>
-      </div>
     </div>
   </footer>
 
@@ -243,10 +198,7 @@
         bar.classList.add('active');
         clearTimeout(hideTimeout);
         hideTimeout = setTimeout(() => {
-            if (player && player.getPlayerState() == 1) {
-                bar.classList.remove('active');
-                closeAllMenus();
-            }
+            if (player && player.getPlayerState() == 1) bar.classList.remove('active');
         }, 3500);
     }
 
@@ -264,8 +216,6 @@
         else player.playVideo();
     }
 
-    function rewind() { player.seekTo(player.getCurrentTime() - 10); }
-    function forward() { player.seekTo(player.getCurrentTime() + 10); }
     function doSeek(v) { player.seekTo(player.getDuration() * (v / 100)); }
 
     function updateUI() {
@@ -281,18 +231,6 @@
             }
         }, 1000);
     }
-
-    function toggleMainMenu(e) { e.stopPropagation(); closeAllMenus(); document.getElementById('mainMenu').classList.add('v-show'); }
-    function openSub(id) { closeAllMenus(); document.getElementById(id).style.display = 'flex'; document.getElementById(id).classList.add('v-show'); }
-    function backToMain() { closeAllMenus(); document.getElementById('mainMenu').classList.add('v-show'); }
-    function closeAllMenus() { 
-        document.querySelectorAll('.v-settings-menu').forEach(el => {
-            el.classList.remove('v-show');
-            if(el.id !== 'mainMenu') el.style.display = 'none';
-        }); 
-    }
-
-    function setSpeed(s) { player.setPlaybackRate(s); closeAllMenus(); }
 
     async function toggleFull() {
         let frame = document.getElementById('main-frame');
