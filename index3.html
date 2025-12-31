@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* --- Main Webpage Design --- */
     body {
       font-family: 'Anek Bangla', 'Roboto', sans-serif;
       background-color: #eef2f5;
@@ -22,7 +21,7 @@
 
     .container { width: 95%; max-width: 1200px; margin: 0 auto; padding: 10px; }
 
-    /* Navbar */
+    /* Navbar Design */
     .navbar { 
       background-color: rgba(255, 255, 255, 0.8); 
       backdrop-filter: blur(8px); 
@@ -30,20 +29,17 @@
       padding: 10px 15px;
     }
     .navbar-brand img { height: 45px; }
-    .navbar-nav .nav-link { color: #333 !important; font-weight: 600; padding: 10px 15px; }
 
-    .header-title { text-align: center; color: black; margin: 20px 0; font-weight: 700; font-size: 1.8rem; }
-    @media (max-width: 576px) { .header-title { font-size: 1.3rem; } }
-
+    .header-title { text-align: center; margin: 20px 0; font-weight: 700; font-size: 1.8rem; }
+    
     .animated-heading { 
       color: #007bff; margin: 15px 0; font-size: 1.5rem; font-weight: 700; 
       position: relative; padding-bottom: 10px; width: fit-content;
     }
     .animated-heading::after { 
       content: ''; position: absolute; left: 0; bottom: 0; height: 4px; 
-      width: 50px; background-color: #007bff; border-radius: 2px; transition: width 0.5s;
+      width: 50px; background-color: #007bff; border-radius: 2px;
     }
-    .animated-heading:hover::after { width: 80%; }
     .topic-name { font-size: 1.2rem; color: #555; margin-top: -10px; margin-bottom: 25px; }
 
     /* --- Video Player Section --- */
@@ -77,7 +73,7 @@
     .v-seek-bar { flex-grow: 1; accent-color: #007bff; height: 4px; }
     .v-time-display { color: white; font-size: 11px; min-width: 45px; }
 
-    /* --- LIVE CHAT HIDE METHOD --- */
+    /* --- LIVE CHAT SECTION (NO LOGO) --- */
     .chat-container {
         width: 100%; max-width: 900px; margin: 0 auto 40px auto;
         background: #fff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
@@ -90,30 +86,34 @@
     .chat-header h5 { margin: 0; font-size: 1rem; font-weight: 700; color: #333; }
     .live-dot { height: 8px; width: 8px; background-color: #ff3b30; border-radius: 50%; animation: blink 1s infinite; }
     
-    /* নিচের অংশ হাইড করার ম্যাজিক এখানে */
     .chat-wrapper {
         position: relative;
         width: 100%;
-        height: 550px; /* এই হাইটটি চ্যাট বক্সের চেয়ে একটু কম রাখা হয়েছে */
-        overflow: hidden; /* এর ফলে নিচের Dead Simple Chat লেখাটি কেটে যাবে */
+        height: 450px; /* উচ্চতা কমানো হয়েছে */
+        background: #fff;
     }
     .chat-wrapper iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    /* Smart Mask: এটি নিচের লোগোটিকে ঢেকে দেবে ক্লিন ভাবে */
+    .chat-mask {
         position: absolute;
-        top: 0;
+        bottom: 0;
         left: 0;
         width: 100%;
-        height: 600px; /* অরিজিনাল চ্যাট বক্সের হাইট */
-        border: none;
+        height: 45px; /* লোগোর অংশটুকু ঢাকার জন্য */
+        background: #fff;
+        z-index: 10;
+        border-top: 1px solid #f0f0f0;
     }
 
     @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
     /* Footer */
-    .footer-section { margin-top: 60px; background: linear-gradient(135deg, #0a3d62, #1e90ff); color: #fff; padding: 50px 0 15px 0; }
-    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); margin-top: 25px; padding-top: 15px; }
-
-    /* Fullscreen Fix */
-    :fullscreen .v-ratio { padding-top: 0 !important; height: 100vh !important; }
+    .footer-section { margin-top: 60px; background: linear-gradient(135deg, #0a3d62, #1e90ff); color: #fff; padding: 40px 0 15px 0; }
   </style>
 </head>
 <body onclick="manageControls()">
@@ -157,12 +157,13 @@
         </div>
         <div class="chat-wrapper">
             <iframe src="https://deadsimplechat.com/A4m0C-_pO"></iframe>
+            <div class="chat-mask"></div>
         </div>
     </div>
   </div>
 
-  <footer class="footer-section">
-    <div class="container text-center">
+  <footer class="footer-section text-center">
+    <div class="container">
         <p>© 2025 <strong>Diploma Tutor</strong> | All Rights Reserved</p>
         <p>Website by: <a href="https://facebook.com/TanbirHasan30" style="color:#ffd700"><strong>Tanbir Hasan</strong></a></p>
     </div>
